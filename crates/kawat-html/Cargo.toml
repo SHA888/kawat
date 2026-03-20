@@ -1,0 +1,15 @@
+[package]
+name = "kawat-html"
+description = "HTML tree cleaning and tag normalization for kawat"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+scraper = { workspace = true }
+lol_html = { workspace = true }
+once_cell = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+encoding_rs = { workspace = true }

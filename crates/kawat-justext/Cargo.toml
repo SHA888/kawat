@@ -1,0 +1,12 @@
+[package]
+name = "kawat-justext"
+description = "Pure Rust jusText algorithm for paragraph classification"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+scraper = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }

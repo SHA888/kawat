@@ -1,0 +1,21 @@
+[package]
+name = "htmldate-rs"
+description = "Fast and robust date extraction from web pages, inspired by Python htmldate"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+keywords = ["date", "html", "metadata", "web-scraping", "extraction"]
+categories = ["web-programming", "date-and-time", "parser-implementations"]
+
+[dependencies]
+chrono = { workspace = true }
+regex = { workspace = true }
+once_cell = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+scraper = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]

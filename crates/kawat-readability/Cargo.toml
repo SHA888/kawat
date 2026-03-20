@@ -1,0 +1,13 @@
+[package]
+name = "kawat-readability"
+description = "Readability fallback extraction for kawat"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+dom_smoothie = { workspace = true }
+scraper = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }

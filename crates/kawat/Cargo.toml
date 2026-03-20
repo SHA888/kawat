@@ -1,0 +1,20 @@
+[package]
+name = "kawat"
+description = "Web content extraction library inspired by trafilatura. Extracts main text, metadata, and comments from HTML."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+keywords = ["web-scraping", "text-extraction", "html", "boilerplate-removal", "nlp"]
+categories = ["web-programming", "text-processing", "parser-implementations"]
+
+[dependencies]
+kawat-core = { workspace = true }
+kawat-output = { workspace = true }
+htmldate-rs = { workspace = true }
+reqwest = { workspace = true }
+thiserror = { workspace = true }
+
+[features]
+default = []
+language-detection = ["kawat-core/language-detection"]

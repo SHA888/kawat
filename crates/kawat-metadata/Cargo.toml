@@ -1,0 +1,17 @@
+[package]
+name = "kawat-metadata"
+description = "Web page metadata extraction (title, author, date, OG, JSON-LD)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+kawat-xpath = { workspace = true }
+htmldate-rs = { workspace = true }
+scraper = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+url = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }

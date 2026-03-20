@@ -1,0 +1,31 @@
+[package]
+name = "kawat-core"
+description = "Core extraction cascade orchestrator for kawat"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+kawat-html = { workspace = true }
+kawat-xpath = { workspace = true }
+kawat-extract = { workspace = true }
+kawat-readability = { workspace = true }
+kawat-justext = { workspace = true }
+kawat-metadata = { workspace = true }
+kawat-dedup = { workspace = true }
+kawat-output = { workspace = true }
+htmldate-rs = { workspace = true }
+scraper = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[features]
+default = []
+language-detection = ["dep:lingua"]
+
+[dependencies.lingua]
+workspace = true
+optional = true

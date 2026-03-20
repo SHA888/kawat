@@ -1,0 +1,20 @@
+[package]
+name = "kawat-cli"
+description = "Command-line interface for kawat web content extraction"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "kawat"
+path = "src/main.rs"
+
+[dependencies]
+kawat = { path = "../kawat" }
+kawat-core = { workspace = true }
+kawat-output = { workspace = true }
+clap = { workspace = true }
+tokio = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }

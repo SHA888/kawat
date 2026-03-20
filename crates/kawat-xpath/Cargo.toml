@@ -1,0 +1,16 @@
+[package]
+name = "kawat-xpath"
+description = "XPath evaluation on HTML documents for kawat"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+sxd_html = { workspace = true }
+sxd-document = { workspace = true }
+sxd-xpath = { workspace = true }
+scraper = { workspace = true }
+thiserror = { workspace = true }
+once_cell = { workspace = true }
+tracing = { workspace = true }

@@ -1,0 +1,12 @@
+[package]
+name = "kawat-dedup"
+description = "Content deduplication via simhash and LRU cache"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+lru = { workspace = true }
+sha1_smol = { workspace = true }
+thiserror = { workspace = true }
