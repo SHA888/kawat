@@ -81,16 +81,16 @@ tracing = "0.1"
 encoding_rs = "0.8"
 
 # Internal workspace crates
-kawat-core = { path = "crates/kawat-core" }
-kawat-html = { path = "crates/kawat-html" }
-kawat-xpath = { path = "crates/kawat-xpath" }
-kawat-extract = { path = "crates/kawat-extract" }
-kawat-readability = { path = "crates/kawat-readability" }
-kawat-justext = { path = "crates/kawat-justext" }
-kawat-metadata = { path = "crates/kawat-metadata" }
-kawat-dedup = { path = "crates/kawat-dedup" }
-kawat-output = { path = "crates/kawat-output" }
-htmldate-rs = { path = "crates/htmldate-rs" }
+kawat-core = { version = "0.1.0", path = "crates/kawat-core" }
+kawat-html = { version = "0.1.0", path = "crates/kawat-html" }
+kawat-xpath = { version = "0.1.0", path = "crates/kawat-xpath" }
+kawat-extract = { version = "0.1.0", path = "crates/kawat-extract" }
+kawat-readability = { version = "0.1.0", path = "crates/kawat-readability" }
+kawat-justext = { version = "0.1.0", path = "crates/kawat-justext" }
+kawat-metadata = { version = "0.1.0", path = "crates/kawat-metadata" }
+kawat-dedup = { version = "0.1.0", path = "crates/kawat-dedup" }
+kawat-output = { version = "0.1.0", path = "crates/kawat-output" }
+htmldate-rs = { version = "0.1.0", path = "crates/htmldate-rs" }
 
 [workspace.lints.rust]
 unsafe_code = "deny"
