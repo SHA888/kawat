@@ -36,13 +36,10 @@ check_login() {
 # Publish a single crate
 publish_crate() {
     local crate_name=$1
-    local crate_path=$2
     
     log_info "Publishing $crate_name..."
     
-    cd "$crate_path"
-    
-    if cargo publish; then
+    if cargo publish -p "$crate_name"; then
         log_info "✓ $crate_name published successfully"
         return 0
     else
@@ -71,25 +68,25 @@ main() {
     
     # Define crates in publishing order (dependency order)
     declare -a CRATES=(
-        "htmldate-rs:crates/htmldate-rs"
-        "kawat-html:crates/kawat-html"
-        "kawat-xpath:crates/kawat-xpath"
-        "kawat-extract:crates/kawat-extract"
-        "kawat-metadata:crates/kawat-metadata"
-        "kawat-dedup:crates/kawat-dedup"
-        "kawat-output:crates/kawat-output"
-        "kawat-readability:crates/kawat-readability"
-        "kawat-justext:crates/kawat-justext"
-        "kawat-core:crates/kawat-core"
-        "kawat:crates/kawat"
+        "htmldate-rs"
+        "kawat-html"
+        "kawat-xpath"
+        "kawat-extract"
+        "kawat-metadata"
+        "kawat-dedup"
+        "kawat-output"
+        "kawat-readability"
+        "kawat-justext"
+        "kawat-core"
+        "kawat"
     )
     
     local failed_crates=()
     
     for i in "${!CRATES[@]}"; do
-        IFS=':' read -r crate_name crate_path <<< "${CRATES[$i]}"
+        crate_name="${CRATES[$i]}"
         
-        if publish_crate "$crate_name" "$crate_path"; then
+        if publish_crate "$crate_name"; then
             # Wait before next publish (except for the last one)
             if [ $((i + 1)) -lt ${#CRATES[@]} ]; then
                 wait_with_countdown $DELAY
