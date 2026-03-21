@@ -150,8 +150,22 @@ The crate version is already published. Increment the version in `Cargo.toml` an
 ### "failed to fetch"
 A dependency hasn't been published yet. Check the publishing order and ensure all dependencies are available on crates.io.
 
-### Rate limiting
-If you hit rate limits, wait a few minutes and retry. The script includes 30-second delays to minimize this risk.
+### "all dependencies must have a version specified when publishing"
+Internal workspace dependencies must include explicit version specifications. The workspace `Cargo.toml` includes `version = "0.1.0"` for all internal crates alongside the `path` specification. This allows local development while supporting crates.io publishing.
+
+### Rate limiting (429 Too Many Requests)
+Crates.io enforces rate limits on new crate publications. If you hit this:
+1. Wait until the time specified in the error message
+2. The script includes 30-second delays between publishes to minimize this risk
+3. Consider publishing in smaller batches if needed
+
+### Publishing order matters
+Crates must be published in dependency order:
+1. `htmldate-rs` (no internal dependencies)
+2. `kawat-html`, `kawat-xpath` (no internal dependencies)
+3. `kawat-extract`, `kawat-metadata`, `kawat-dedup`, `kawat-output`, `kawat-readability`, `kawat-justext` (depend on above)
+4. `kawat-core` (depends on all above)
+5. `kawat` (main facade, depends on core)
 
 ## Updating Versions
 
