@@ -1,11 +1,11 @@
 #!/bin/bash
-# Publishing script for kawat crates with rate-limiting delays
+# Publishing script for failed crates only
 # Publishes crates in dependency order with 60-second delays between publishes
 
 set -e
 
 DELAY=60  # seconds between publishes (increased to 60s to reduce rate limiting)
-WORKSPACE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Colors for output
 RED='\033[0;31m'
@@ -61,12 +61,13 @@ wait_with_countdown() {
 }
 
 main() {
-    log_info "Starting kawat crate publishing process..."
+    log_info "Starting failed crates publishing process..."
     check_login
     
     cd "$WORKSPACE_ROOT"
     
-    # Define crates in publishing order (dependency order)
+    # Define failed crates in publishing order (dependency order)
+    # These are the crates that failed in the previous attempt
     declare -a CRATES=(
         "htmldate-rs"
         "kawat-html"
@@ -76,7 +77,6 @@ main() {
         "kawat-dedup"
         "kawat-output"
         "kawat-readability"
-        "kawat-justext"
         "kawat-core"
         "kawat"
     )

@@ -127,8 +127,14 @@ bash ./scripts/publish.sh
 The script will:
 1. Check that you're logged in to crates.io
 2. Publish each crate in the correct order
-3. Wait 30 seconds between publishes to avoid rate limiting
+3. Wait 60 seconds between publishes to avoid rate limiting
 4. Report success/failure for each crate
+
+For retrying only failed crates:
+
+```bash
+bash ./scripts/publish-failed.sh
+```
 
 ## Verifying Publishes
 
@@ -156,7 +162,7 @@ Internal workspace dependencies must include explicit version specifications. Th
 ### Rate limiting (429 Too Many Requests)
 Crates.io enforces rate limits on new crate publications. If you hit this:
 1. Wait until the time specified in the error message
-2. The script includes 30-second delays between publishes to minimize this risk
+2. The script includes 60-second delays between publishes to minimize this risk
 3. Consider publishing in smaller batches if needed
 
 ### Publishing order matters
