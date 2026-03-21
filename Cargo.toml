@@ -20,7 +20,7 @@ version = "0.1.0"
 edition = "2024"
 license = "Apache-2.0"
 rust-version = "1.85"
-repository = "https://github.com/user/kawat"
+repository = "https://github.com/SHA888/kawat"
 keywords = ["web-scraping", "text-extraction", "html", "boilerplate-removal", "nlp"]
 categories = ["web-programming", "text-processing", "parser-implementations"]
 
