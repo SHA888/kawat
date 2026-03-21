@@ -1,10 +1,10 @@
 #!/bin/bash
 # Publishing script for failed crates only
-# Publishes crates in dependency order with 60-second delays between publishes
+# Publishes crates in dependency order with 120-second delays between publishes
 
 set -e
 
-DELAY=60  # seconds between publishes (increased to 60s to reduce rate limiting)
+DELAY=120  # seconds between publishes (increased to 120s to reduce rate limiting)
 WORKSPACE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Colors for output
