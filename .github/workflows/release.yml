@@ -66,7 +66,7 @@ jobs:
             artifact_name: kawat.exe
             asset_name: kawat-x86_64-windows
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -123,7 +123,7 @@ jobs:
     needs: create-release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
