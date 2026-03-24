@@ -34,12 +34,12 @@
   - [x] Jobs: format check (rust-fmt), lint (clippy), test (Linux/macOS/Windows), security audit
   - [x] Matrix testing across Rust stable/beta/nightly
   - [x] Cache cargo dependencies for faster builds
-- [ ] **Release workflow** (`.github/workflows/release.yml`)
-  - [ ] Triggered on version tags (v*)
-  - [ ] Build cross-platform binaries (x86_64/aarch64 for Linux/macOS/Windows)
-  - [ ] Create GitHub release with artifacts and checksums
-  - [ ] Publish to crates.io with proper dependency ordering
-  - [ ] Rate limiting handling for crates.io API
+- [x] **Release workflow** (`.github/workflows/release.yml`)
+  - [x] Triggered on version tags (v*)
+  - [x] Build cross-platform binaries (x86_64/aarch64 for Linux/macOS/Windows)
+  - [x] Create GitHub release with artifacts and checksums
+  - [x] Publish to crates.io with proper dependency ordering
+  - [x] Rate limiting handling for crates.io API
 - [ ] **Benchmark workflow** (`.github/workflows/benchmark.yml`)
   - [ ] Run criterion benchmarks on schedule (weekly) and on benchmark changes
   - [ ] Track performance regressions over time with custom storage
