@@ -1,0 +1,262 @@
+name: Security Audit
+
+on:
+  schedule:
+    # Run daily at 06:00 UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Cargo.lock'
+      - 'deny.toml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'Cargo.lock'
+      - 'deny.toml'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-security-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-security-
+            ${{ runner.os }}-cargo-
+            
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
+        
+      - name: Run security audit
+        id: audit
+        run: |
+          # Run audit and capture output
+          AUDIT_OUTPUT=$(cargo audit 2>&1 || true)
+          echo "audit_output<<EOF" >> $GITHUB_OUTPUT
+          echo "$AUDIT_OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Check for vulnerabilities
+          if echo "$AUDIT_OUTPUT" | grep -q "Crate: "; then
+            echo "vulnerabilities_found=true" >> $GITHUB_OUTPUT
+          else
+            echo "vulnerabilities_found=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Display audit results
+        run: |
+          echo "=== Security Audit Results ==="
+          echo "${{ steps.audit.outputs.audit_output }}"
+          
+      - name: Check for RUSTSEC advisories
+        id: rustsec
+        run: |
+          # Extract RUSTSEC advisories
+          RUSTSEC_OUTPUT=$(echo "${{ steps.audit.outputs.audit_output }}" | grep -A 5 "Crate: " || true)
+          echo "rustsec_advisories<<EOF" >> $GITHUB_OUTPUT
+          echo "$RUSTSEC_OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+      - name: Create Security Issue
+        if: steps.audit.outputs.vulnerabilities_found == 'true' && github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const auditOutput = fs.readFileSync(process.env.GITHUB_OUTPUT, 'utf8');
+            const rustsecAdvisories = process.env.RUSTSEC_ADVISORIES || '';
+            
+            // Extract vulnerability details
+            const vulnerabilities = rustsecAdvisories.split('\n\n').filter(Boolean);
+            
+            let body = `## 🚨 Security Vulnerabilities Detected\n\n`;
+            body += `The automated security audit found the following vulnerabilities:\n\n`;
+            
+            vulnerabilities.forEach(vuln => {
+              const lines = vuln.split('\n').filter(Boolean);
+              const crate = lines.find(l => l.startsWith('Crate: '));
+              const version = lines.find(l => l.startsWith('Version: '));
+              const title = lines.find(l => l.startsWith('Title: '));
+              const url = lines.find(l => l.startsWith('URL: '));
+              
+              if (crate && version && title) {
+                body += `### ${crate.replace('Crate: ', '')} ${version.replace('Version: ', '')}\n`;
+                body += `**${title.replace('Title: ', '')}**\n`;
+                if (url) {
+                  body += `- [Advisory](${url.replace('URL: ', '')})\n`;
+                }
+                body += `\n`;
+              }
+            });
+            
+            body += `## Recommended Actions\n\n`;
+            body += `1. Review the vulnerabilities above\n`;
+            body += `2. Update affected dependencies\n`;
+            body += `3. Run \`cargo update\` and test\n`;
+            body += `4. Consider using \`cargo deny update\` for automated updates\n\n`;
+            body += `---\n`;
+            body += `*This issue was created automatically by the security audit workflow*\n`;
+            
+            // Create or update issue
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Security Vulnerabilities Detected - ${new Date().toISOString().split('T')[0]}`,
+              body: body,
+              labels: ['security', 'dependencies', 'automated']
+            });
+            
+      - name: Send notification (Slack)
+        if: steps.audit.outputs.vulnerabilities_found == 'true' && github.event_name == 'schedule'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            VULNS=$(echo "${{ steps.audit.outputs.audit_output }}" | grep -c "Crate: " || true)
+            curl -X POST -H 'Content-type: application/json' \
+              --data "{\"text\":\"🚨 Security Alert: $VULNS vulnerabilities found in kawat repository. See GitHub issues for details.\"}" \
+              "$SLACK_WEBHOOK_URL"
+          fi
+          
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit-report
+          path: |
+            ~/.cargo/advisory-db
+            ${{ github.workspace }}/Cargo.lock
+          retention-days: 30
+
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-license-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-license-
+            ${{ runner.os }}-cargo-
+            
+      - name: Run license check
+        uses: EmbarkStudios/cargo-deny-action@v1
+        with:
+          command: check
+          arguments: --all-features
+          
+      - name: Generate license report
+        run: |
+          cargo tree --format "{p}" | sort -u > crates.txt
+          echo "=== License Report ==="
+          echo "Total dependencies: $(wc -l < crates.txt)"
+          echo ""
+          echo "Allowed licenses:"
+          echo "- MIT"
+          echo "- Apache-2.0"
+          echo "- BSD-2-Clause"
+          echo "- BSD-3-Clause"
+          echo "- ISC"
+          echo "- CC0-1.0"
+          echo ""
+          
+      - name: Upload license report
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: crates.txt
+          retention-days: 30
+
+  dependency-update:
+    name: Check for Updates
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-update-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-update-
+            ${{ runner.os }}-cargo-
+            
+      - name: Check for outdated dependencies
+        id: outdated
+        run: |
+          # Install cargo-outdated
+          cargo install cargo-outdated
+          
+          # Check for outdated packages
+          OUTDATED_OUTPUT=$(cargo outdated --workspace 2>&1 || true)
+          echo "outdated_output<<EOF" >> $GITHUB_OUTPUT
+          echo "$OUTDATED_OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Check if there are outdated packages
+          if echo "$OUTDATED_OUTPUT" | grep -q "Name"; then
+            echo "outdated_found=true" >> $GITHUB_OUTPUT
+          else
+            echo "outdated_found=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Display outdated packages
+        run: |
+          echo "=== Outdated Dependencies ==="
+          echo "${{ steps.outdated.outputs.outdated_output }}"
+          
+      - name: Create Update PR
+        if: steps.outdated.outputs.outdated_found == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update dependencies"
+          title: "chore: update outdated dependencies"
+          body: |
+            ## Dependency Updates
+            
+            Automated dependency update from security audit workflow.
+            
+            ### Changes
+            ```bash
+            cargo update
+            ```
+            
+            Please review the changes and ensure all tests pass before merging.
+          branch: chore/update-dependencies
+          delete-branch: true

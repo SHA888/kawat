@@ -45,10 +45,10 @@
   - [x] Track performance regressions over time with custom storage
   - [x] Store results as artifacts and upload to benchmark service
   - [x] Generate performance reports and trend analysis
-- [ ] **Security audit workflow** (`.github/workflows/security.yml`)
-  - [ ] Daily cargo-audit runs with failure notifications
+- [x] **Security audit workflow** (`.github/workflows/security.yml`)
+  - [x] Daily cargo-audit runs with failure notifications
   - [x] Dependabot configuration for automated dependency updates
-  - [ ] RUSTSEC advisory monitoring and automated PRs
+  - [x] RUSTSEC advisory monitoring and automated PRs
   - [x] License compliance checking with cargo-deny
 
 ### 0.2 Quality Gates
