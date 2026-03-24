@@ -116,13 +116,20 @@ jobs:
             body += `*This issue was created automatically by the security audit workflow*\n`;
             
             // Create or update issue
-            github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `Security Vulnerabilities Detected - ${new Date().toISOString().split('T')[0]}`,
-              body: body,
-              labels: ['security', 'dependencies', 'automated']
-            });
+            try {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Security Vulnerabilities Detected - ${new Date().toISOString().split('T')[0]}`,
+                body: body,
+                labels: ['security', 'dependencies', 'automated']
+              });
+              console.log('✅ Security issue created successfully');
+            } catch (error) {
+              console.log('⚠️ Could not create issue (permissions may be restricted):', error.message);
+              console.log('📋 Security vulnerabilities found - please review manually:');
+              console.log(body);
+            }
             
       - name: Send notification (Slack)
         if: steps.audit.outputs.vulnerabilities_found == 'true' && github.event_name == 'schedule'

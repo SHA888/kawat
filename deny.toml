@@ -74,8 +74,6 @@ wildcards = "warn"
 # * simplest-path - The path to the version with the fewest edges is highlighted
 # * all - Both lowest-version and simplest-path are used
 highlight = "all"
-# Lint level for unmaintained crates
-unmaintained = "warn"
 # List of crates that are allowed. Use with care!
 allow = [
     #{ name = "ansi_term", version = "=0.11.0" },
