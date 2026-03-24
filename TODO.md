@@ -9,6 +9,7 @@
 
 | Version | Phase | Milestone | Target |
 |---|---|---|---|
+| — | Phase 0 | Infrastructure & CI/CD | CI/CD workflows, quality gates, deployment |
 | `0.1.0` | Phase 1 | Minimum viable extraction | Core extraction without fallbacks |
 | `0.2.0` | Phase 2 | Fallback cascade | Readability + justext + baseline |
 | `0.3.0` | Phase 3 | Metadata + date extraction | Full metadata, htmldate-rs v0.1.0 |
@@ -17,6 +18,97 @@
 | `0.6.0` | Phase 6 | CLI + batch | Full CLI, stdin/file/URL, batch |
 | `0.7.0` | Phase 7 | Discovery | Feeds, sitemaps, crawling |
 | `1.0.0` | Phase 8 | Production release | Benchmark parity, fuzz-tested, documented |
+
+---
+
+## Phase 0 — Infrastructure & CI/CD (Ongoing)
+
+**Goal:** Establish robust CI/CD workflows, quality gates, and deployment automation throughout the project lifecycle.
+
+**Status:** 🔄 **IN PROGRESS**
+
+### 0.1 CI/CD Workflows
+
+- [ ] **PR validation workflow** (`.github/workflows/ci.yml`)
+  - [ ] Run on all PRs and pushes to main branch
+  - [ ] Jobs: format check (rust-fmt), lint (clippy), test (Linux/macOS/Windows), security audit
+  - [ ] Matrix testing across Rust stable/beta/nightly
+  - [ ] Cache cargo dependencies for faster builds
+- [ ] **Release workflow** (`.github/workflows/release.yml`)
+  - [ ] Triggered on version tags (v*)
+  - [ ] Build cross-platform binaries (x86_64/aarch64 for Linux/macOS/Windows)
+  - [ ] Create GitHub release with artifacts and checksums
+  - [ ] Publish to crates.io with proper dependency ordering
+  - [ ] Rate limiting handling for crates.io API
+- [ ] **Benchmark workflow** (`.github/workflows/benchmark.yml`)
+  - [ ] Run criterion benchmarks on schedule (weekly) and on benchmark changes
+  - [ ] Track performance regressions over time with custom storage
+  - [ ] Store results as artifacts and upload to benchmark service
+  - [ ] Generate performance reports and trend analysis
+- [ ] **Security audit workflow** (`.github/workflows/security.yml`)
+  - [ ] Daily cargo-audit runs with failure notifications
+  - [ ] Dependabot configuration for automated dependency updates
+  - [ ] RUSTSEC advisory monitoring and automated PRs
+  - [ ] License compliance checking with cargo-deny
+
+### 0.2 Quality Gates
+
+- [ ] Require CI passing before merge (branch protection rules)
+- [ ] Code coverage tracking with codecov
+  - [ ] Target: ≥70% coverage for Phase 1
+  - [ ] Target: ≥80% coverage for v1.0
+  - [ ] Coverage badge in README
+- [ ] Automated changelog generation using git-cliff
+  - [ ] Conventional commit enforcement
+  - [ ] Auto-generate CHANGELOG.md on releases
+- [ ] Version bumping automation
+  - [ ] Semantic versioning based on conventional commits
+  - [ ] Pre-release validation checks
+
+### 0.3 Documentation & Deployment
+
+- [ ] Auto-deploy docs to GitHub Pages on main branch updates
+  - [ ] API documentation generation with cargo doc
+  - [ ] Custom theme and search functionality
+  - [ ] Versioned documentation for releases
+- [ ] README badge integration
+  - [ ] CI status badge
+  - [ ] crates.io version badge
+  - [ ] docs.rs documentation badge
+  - [ ] codecov coverage badge
+  - [ ] benchmark performance badge
+- [ ] Demo site deployment (optional, Phase 4+)
+  - [ ] Web interface for testing extraction
+  - [ ] Live examples and playground
+  - [ ] Performance comparison with trafilatura
+
+### 0.4 Publishing Automation
+
+- [ ] Automated crate publishing workflow
+  - [ ] Dependency ordering validation
+  - [ ] Pre-publish validation (tests, docs, manifest checks)
+  - [ ] Dry-run mode for testing publish process
+  - [ ] Rollback capability for failed publishes
+- [ ] Release artifact management
+  - [ ] Binary releases for multiple platforms
+  - [ ] Checksum verification (SHA256)
+  - [ ] Automatic GitHub release notes generation
+- [ ] Rate limiting and error handling
+  - [ ] crates.io API rate limit awareness
+  - [ ] Exponential backoff for retries
+  - [ ] Notification system for publish failures
+
+### 0.5 Phase 0 Implementation Timeline
+
+| Phase | CI/CD Tasks | Target |
+|---|---|---|
+| Phase 0 | Basic CI workflow (format, clippy, test) | Immediately |
+| Phase 0 | Pre-commit hooks configuration | Immediately |
+| Phase 1 | Code coverage integration (70% target) | v0.1.0 |
+| Phase 2 | Benchmark workflow setup | v0.2.0 |
+| Phase 4 | Documentation deployment | v0.4.0 |
+| Phase 6 | Cross-compilation in CI | v0.6.0 |
+| Phase 8 | Full CI/CD automation (80% coverage) | v1.0.0 |
 
 ---
 
@@ -105,6 +197,9 @@
 - [x] README with basic usage example
 - [x] Tag `v0.1.0`
 - [x] Publish to crates.io
+- [ ] Set up basic CI workflow (format, clippy, test)
+- [ ] Configure pre-commit hooks
+- [ ] Code coverage integration (70% target) with codecov
 
 ---
 
@@ -163,6 +258,7 @@
 - [ ] Comment extraction produces output matching trafilatura
 - [ ] Tag `v0.2.0`
 - [ ] Publish to crates.io
+- [ ] Benchmark workflow setup with criterion + custom storage
 
 ---
 
@@ -252,6 +348,8 @@
 - [ ] TEI-XML validates against DTD (stretch goal)
 - [ ] Tag `v0.4.0`
 - [ ] Publish to crates.io
+- [ ] Documentation deployment to GitHub Pages
+- [ ] Demo site deployment (optional)
 
 ---
 
@@ -321,6 +419,7 @@
 - [ ] Parallel downloads with politeness
 - [ ] Tag `v0.6.0`
 - [ ] Publish to crates.io
+- [ ] Cross-compilation in CI for multiple platforms
 
 ---
 
@@ -385,7 +484,9 @@
 - [ ] Fuzz `extract()` with `cargo-fuzz`
 - [ ] Fuzz `htmldate_rs::find_date()`
 - [ ] Property-based testing for dedup (proptest)
-- [ ] CI: GitHub Actions for Linux/macOS/Windows
+- [ ] CI/CD fully operational (see Phase 0 - Infrastructure & CI/CD)
+  - [ ] All workflows passing on main branch
+  - [ ] Release automation tested end-to-end
 
 ### 8.3 Documentation
 
@@ -412,6 +513,9 @@
 - [ ] `cargo deny check` clean (no license or vulnerability issues)
 - [ ] Published to crates.io
 - [ ] Tag `v1.0.0`
+- [ ] Full CI/CD automation (80% coverage target)
+- [ ] All quality gates operational
+- [ ] Release automation tested end-to-end
 
 ---
 
@@ -419,6 +523,7 @@
 
 | Phase | Est. Rust LOC | Complexity | Notes |
 |---|---|---|---|
+| Phase 0 | ~500 | Low | Mostly YAML configuration and documentation |
 | Phase 1 | ~1,800 | High | Internal tree representation is the key design decision |
 | Phase 2 | ~1,000 | High | Comparison heuristic must be exact port |
 | Phase 3 | ~1,200 | Medium | htmldate-rs is well-bounded; metadata is pattern-heavy |
@@ -427,7 +532,7 @@
 | Phase 6 | ~400 | Low | Mostly CLI plumbing |
 | Phase 7 | ~1,100 | Medium | Crawler is most complex |
 | Phase 8 | ~200 | Low | Testing, benchmarks, polish |
-| **Total** | **~6,800** | | Comparable to trafilatura's 8,000 Python lines |
+| **Total** | **~7,300** | | Comparable to trafilatura's 8,000 Python lines |
 
 ---
 
