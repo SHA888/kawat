@@ -31,6 +31,7 @@ impl CssFallback {
         match xpath {
             // Expression 2: generic <article>
             "(.//article)[1]" => Selector::parse("article").ok(),
+            "(article)[1]" => Selector::parse("article").ok(),
 
             // Expression 5: main element fallback
             r#"(.//*[self::article or self::div or self::section][starts-with(@class, "main") or starts-with(@id, "main") or starts-with(@role, "main")])[1]|(.//main)[1]"# => {
