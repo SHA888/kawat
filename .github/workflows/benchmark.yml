@@ -1,0 +1,168 @@
+name: Benchmark
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'crates/kawat-xpath/benches/**'
+      - 'crates/kawat-xpath/src/**'
+      - 'Cargo.lock'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'crates/kawat-xpath/benches/**'
+      - 'crates/kawat-xpath/src/**'
+      - 'Cargo.lock'
+  schedule:
+    # Run weekly on Sundays at 00:00 UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-bench-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-bench-
+            ${{ runner.os }}-cargo-
+            
+      - name: Run benchmarks
+        run: |
+          cd crates/kawat-xpath
+          cargo bench --all -- --output-format json > benchmark-results.json
+          
+      - name: Process benchmark results
+        id: process
+        run: |
+          cd crates/kawat-xpath
+          # Extract summary from JSON
+          cat benchmark-results.json | jq -r '
+            .report[] | 
+            "\(.group.name)/\(.query.id): \(.query.mean_ns | tonumber | . / 1_000_000) ms ± \(.query.stddev_ns | tonumber | . / 1_000_000) ms"
+          ' > benchmark-summary.txt
+          
+          # Create CSV for tracking
+          echo "benchmark,mean_ns,stddev_ns" > benchmark-results.csv
+          cat benchmark-results.json | jq -r '
+            .report[] | 
+            "\(.group.name)/\(.query.id),\(.query.mean_ns),\(.query.stddev_ns)"
+          ' >> benchmark-results.csv
+          
+          echo "summary=$(cat benchmark-summary.txt | base64 -w 0)" >> $GITHUB_OUTPUT
+          echo "csv=$(cat benchmark-results.csv | base64 -w 0)" >> $GITHUB_OUTPUT
+          
+      - name: Display benchmark summary
+        run: |
+          echo "${{ steps.process.outputs.summary }}" | base64 -d
+          
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          tool: 'cargo'
+          output-file-path: crates/kawat-xpath/benchmark-results.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          comment-on-alert: true
+          alert-threshold: '200%'
+          fail-on-alert: true
+          
+      - name: Upload benchmark artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: |
+            crates/kawat-xpath/benchmark-results.json
+            crates/kawat-xpath/benchmark-summary.txt
+            crates/kawat-xpath/benchmark-results.csv
+          retention-days: 30
+          
+      - name: Download previous benchmark data
+        if: github.event_name == 'pull_request'
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: benchmark.yml
+          branch: main
+          name: benchmark-results
+          path: previous-benchmark
+          
+      - name: Compare with previous benchmarks
+        if: github.event_name == 'pull_request'
+        run: |
+          cd crates/kawat-xpath
+          
+          # Parse current results
+          cat benchmark-results.json | jq -r '
+            .report[] | 
+            "\(.group.name)/\(.query.id),\(.query.mean_ns)"
+          ' > current.csv
+          
+          # Parse previous results if available
+          if [ -f "../../previous-benchmark/benchmark-results.json" ]; then
+            cat ../../previous-benchmark/benchmark-results.json | jq -r '
+              .report[] | 
+              "\(.group.name)/\(.query.id),\(.query.mean_ns)"
+            ' > previous.csv
+            
+            # Compare and report regressions
+            echo "## Benchmark Comparison" > benchmark-comparison.md
+            echo "" >> benchmark-comparison.md
+            echo "| Benchmark | Current (ms) | Previous (ms) | Change |" >> benchmark-comparison.md
+            echo "|-----------|--------------|---------------|--------|" >> benchmark-comparison.md
+            
+            join -t, -1 1 -2 1 <(sort current.csv) <(sort previous.csv) | while IFS=, read -r name current previous; do
+              current_ms=$(echo "$current / 1_000_000" | bc -l)
+              prev_ms=$(echo "$previous / 1_000_000" | bc -l)
+              change=$(echo "scale=2; ($current_ms - $prev_ms) / $prev_ms * 100" | bc -l)
+              
+              if (( $(echo "$change < -10" | bc -l) )); then
+                status="🟢 $change%"
+              elif (( $(echo "$change > 10" | bc -l) )); then
+                status="🔴 $change%"
+              else
+                status="⚪ $change%"
+              fi
+              
+              echo "| $name | $current_ms | $prev_ms | $status |" >> benchmark-comparison.md
+            done
+            
+            cat benchmark-comparison.md
+          else
+            echo "No previous benchmark data found"
+          fi
+          
+      - name: Comment PR with benchmark results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'crates/kawat-xpath/benchmark-comparison.md';
+            
+            if (fs.existsSync(path)) {
+              const comparison = fs.readFileSync(path, 'utf8');
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## 📊 Benchmark Results\n\n${comparison}`
+              });
+            }

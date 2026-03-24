@@ -40,11 +40,11 @@
   - [x] Create GitHub release with artifacts and checksums
   - [x] Publish to crates.io with proper dependency ordering
   - [x] Rate limiting handling for crates.io API
-- [ ] **Benchmark workflow** (`.github/workflows/benchmark.yml`)
-  - [ ] Run criterion benchmarks on schedule (weekly) and on benchmark changes
-  - [ ] Track performance regressions over time with custom storage
-  - [ ] Store results as artifacts and upload to benchmark service
-  - [ ] Generate performance reports and trend analysis
+- [x] **Benchmark workflow** (`.github/workflows/benchmark.yml`)
+  - [x] Run criterion benchmarks on schedule (weekly) and on benchmark changes
+  - [x] Track performance regressions over time with custom storage
+  - [x] Store results as artifacts and upload to benchmark service
+  - [x] Generate performance reports and trend analysis
 - [ ] **Security audit workflow** (`.github/workflows/security.yml`)
   - [ ] Daily cargo-audit runs with failure notifications
   - [x] Dependabot configuration for automated dependency updates
