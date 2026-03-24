@@ -1,0 +1,32 @@
+version: 2
+updates:
+  # Monitor Rust dependencies
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "SHA888"
+    assignees:
+      - "SHA888"
+    commit-message:
+      prefix: "cargo"
+      include: "scope"
+      
+  # Monitor GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "SHA888"
+    assignees:
+      - "SHA888"
+    commit-message:
+      prefix: "ci"
