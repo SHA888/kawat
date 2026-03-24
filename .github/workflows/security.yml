@@ -167,7 +167,7 @@ jobs:
             ${{ runner.os }}-cargo-
             
       - name: Run license check
-        uses: EmbarkStudios/cargo-deny-action@v1
+        uses: EmbarkStudios/cargo-deny-action@v2
         with:
           command: check
           arguments: --all-features

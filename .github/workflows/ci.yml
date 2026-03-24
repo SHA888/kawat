@@ -109,7 +109,7 @@ jobs:
         run: cargo audit
         
       - name: Check license compliance
-        uses: EmbarkStudios/cargo-deny-action@v1
+        uses: EmbarkStudios/cargo-deny-action@v2
 
   coverage:
     name: Code Coverage
