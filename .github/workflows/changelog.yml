@@ -21,8 +21,11 @@ jobs:
           
       - name: Install git-cliff
         run: |
-          wget -qO- https://github.com/orhun/git-cliff/releases/latest/download/git-cliff-${ARCH}-unknown-linux-musl.tar.gz | tar -xz \
-            && sudo mv git-cliff-${ARCH}-unknown-linux-musl/git-cliff /usr/bin/
+          # Download with proper error handling
+          wget --tries=3 --timeout=30 -O git-cliff.tar.gz https://github.com/orhun/git-cliff/releases/latest/download/git-cliff-${ARCH}-unknown-linux-musl.tar.gz
+          tar -xzf git-cliff.tar.gz
+          sudo mv git-cliff-${ARCH}-unknown-linux-musl/git-cliff /usr/bin/
+          rm -f git-cliff.tar.gz
         env:
           ARCH: x86_64
           
