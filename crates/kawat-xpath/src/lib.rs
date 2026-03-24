@@ -10,6 +10,7 @@
 mod compiled;
 mod error;
 mod eval;
+mod fallback;
 
 pub use compiled::CompiledXpaths;
 pub use error::XpathError;

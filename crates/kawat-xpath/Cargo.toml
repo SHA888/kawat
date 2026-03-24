@@ -7,10 +7,18 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-sxd_html = { workspace = true }
+sxd_html = "0.1"
 sxd-document = { workspace = true }
-sxd-xpath = { workspace = true }
-scraper = { workspace = true }
-thiserror = { workspace = true }
+sxd-xpath = "0.4"
+scraper = "0.22"
+thiserror = "2"
 once_cell = { workspace = true }
 tracing = { workspace = true }
+
+[dev-dependencies]
+tokio-test = "0.4"
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "xpath_benchmark"
+harness = false
