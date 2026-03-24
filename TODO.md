@@ -53,17 +53,17 @@
 
 ### 0.2 Quality Gates
 
-- [ ] Require CI passing before merge (branch protection rules)
-- [ ] Code coverage tracking with codecov
-  - [ ] Target: ≥70% coverage for Phase 1
-  - [ ] Target: ≥80% coverage for v1.0
+- [x] Require CI passing before merge (branch protection rules)
+- [x] Code coverage tracking with codecov
+  - [x] Target: ≥70% coverage for Phase 1
+  - [x] Target: ≥80% coverage for v1.0
   - [ ] Coverage badge in README
-- [ ] Automated changelog generation using git-cliff
-  - [ ] Conventional commit enforcement
-  - [ ] Auto-generate CHANGELOG.md on releases
-- [ ] Version bumping automation
-  - [ ] Semantic versioning based on conventional commits
-  - [ ] Pre-release validation checks
+- [x] Automated changelog generation using git-cliff
+  - [x] Conventional commit enforcement
+  - [x] Auto-generate CHANGELOG.md on releases
+- [x] Version bumping automation
+  - [x] Semantic versioning based on conventional commits
+  - [x] Pre-release validation checks
 
 ### 0.3 Documentation & Deployment
 

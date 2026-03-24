@@ -1,0 +1,143 @@
+name: Commit Lint
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  commitlint:
+    name: Lint Commits
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name != github.repository
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install commitlint
+        run: |
+          npm install -g @commitlint/cli @commitlint/config-conventional
+          
+      - name: Create commitlint config
+        run: |
+          cat > .commitlintrc.js << 'EOF'
+          module.exports = {
+            extends: ['@commitlint/config-conventional'],
+            rules: {
+              'type-enum': [
+                2,
+                'always',
+                [
+                  'feat',     // New feature
+                  'fix',      // Bug fix
+                  'docs',     // Documentation changes
+                  'style',    // Code style changes (formatting, etc)
+                  'refactor', // Code refactoring
+                  'perf',     // Performance improvements
+                  'test',     // Test changes
+                  'chore',    // Build process, dependency updates, etc
+                  'ci',       // CI configuration changes
+                  'build',    // Build system changes
+                  'revert',   // Revert previous commit
+                ]
+              ],
+              'scope-case': [2, 'always', 'lower-case'],
+              'subject-case': [2, 'never', ['start-case', 'pascal-case', 'upper-case']],
+              'subject-empty': [2, 'never'],
+              'subject-full-stop': [2, 'never', '.'],
+              'header-max-length': [2, 'always', 72],
+              'body-max-line-length': [2, 'always', 100],
+            }
+          };
+          EOF
+          
+      - name: Lint commits
+        run: |
+          # Get all commits in the PR
+          COMMITS=$(git log --format=%H origin/main..HEAD)
+          
+          if [ -z "$COMMITS" ]; then
+            echo "No commits to lint"
+            exit 0
+          fi
+          
+          echo "Linting commits:"
+          git log --format="%s" origin/main..HEAD
+          echo ""
+          
+          # Lint each commit
+          for commit in $COMMITS; do
+            echo "Linting commit: $commit"
+            git log -1 --format=%B $commit | npx commitlint
+          done
+          
+          echo "✅ All commits pass conventional commit standards"
+          
+      - name: Check commit messages
+        id: check
+        run: |
+          # Check for conventional commits in PR
+          NON_CONVENTIONAL=$(git log --format=%s origin/main..HEAD | grep -v -E "^(feat|fix|docs|style|refactor|perf|test|chore|ci|build|revert)(\(.+\))?: " || true)
+          
+          if [ -n "$NON_CONVENTIONAL" ]; then
+            echo "non_conventional=true" >> $GITHUB_OUTPUT
+            echo "Non-conventional commits found:"
+            echo "$NON_CONVENTIONAL"
+          else
+            echo "non_conventional=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Comment on PR
+        if: steps.check.outputs.non_conventional == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ⚠️ Non-Conventional Commits Detected
+              
+              Some commits in this PR don't follow the [Conventional Commits](https://www.conventionalcommits.org/) standard.
+              
+              **Expected format:**
+              \`\`\`
+              <type>[optional scope]: <description>
+              
+              [optional body]
+              
+              [optional footer(s)]
+              \`\`\`
+              
+              **Types:**
+              - \`feat\`: New feature
+              - \`fix\`: Bug fix
+              - \`docs\`: Documentation changes
+              - \`style\`: Code style changes
+              - \`refactor\`: Code refactoring
+              - \`perf\`: Performance improvements
+              - \`test\`: Test changes
+              - \`chore\`: Build process, dependency updates
+              - \`ci\`: CI configuration changes
+              - \`build\`: Build system changes
+              - \`revert\`: Revert previous commit
+              
+              **Example:**
+              \`\`\`
+              feat(xpath): add CSS selector fallback for malformed HTML
+              
+              - Implements CssFallback struct with eval_text method
+              - Adds custom filters for translate() expressions
+              - Fixes #123
+              \`\`\`
+              
+              Please amend your commits to follow this standard. This helps with:
+              - Automated changelog generation
+              - Semantic versioning
+              - Release automation`
+            });

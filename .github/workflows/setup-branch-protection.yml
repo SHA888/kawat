@@ -1,0 +1,167 @@
+name: Setup Branch Protection
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force update branch protection rules'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  setup-branch-protection:
+    name: Setup Branch Protection Rules
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      repository: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Branch Protection
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const branch = 'main';
+            const force = context.payload.inputs.force || false;
+            
+            try {
+              // Get current branch protection
+              let currentProtection;
+              try {
+                currentProtection = await github.rest.repos.getBranchProtection({
+                  owner,
+                  repo,
+                  branch,
+                });
+                console.log('Current branch protection:', currentProtection.data);
+                
+                if (!force) {
+                  console.log('Branch protection already exists. Use force=true to update.');
+                  return;
+                }
+              } catch (error) {
+                if (error.status !== 404) {
+                  throw error;
+                }
+                console.log('No existing branch protection found');
+              }
+              
+              // Branch protection configuration
+              const protection = {
+                required_status_checks: {
+                  strict: true,
+                  contexts: [
+                    'CI',
+                    'Code Coverage',
+                    'Security Audit',
+                    'License Compliance'
+                  ]
+                },
+                enforce_admins: true,
+                required_pull_request_reviews: {
+                  required_approving_review_count: 1,
+                  dismiss_stale_reviews: true,
+                  require_code_owner_reviews: false,
+                  dismissal_restrictions: {
+                    users: [],
+                    teams: []
+                  }
+                },
+                restrictions: {
+                  users: [],
+                  teams: []
+                },
+                allow_force_pushes: false,
+                allow_deletions: false,
+                required_linear_history: true,
+                allow_force_pushes_for_collaborators: false,
+                required_conversation_resolution: true,
+                lock_branch: false,
+                allow_fork_syncing: true
+              };
+              
+              // Create or update branch protection
+              if (currentProtection) {
+                console.log('Updating branch protection...');
+                await github.rest.repos.updateBranchProtection({
+                  owner,
+                  repo,
+                  branch,
+                  ...protection
+                });
+              } else {
+                console.log('Creating branch protection...');
+                await github.rest.repos.createBranchProtection({
+                  owner,
+                  repo,
+                  branch,
+                  ...protection
+                });
+              }
+              
+              console.log('Branch protection rules configured successfully!');
+              
+              // Create summary
+              const summary = `
+              ## Branch Protection Rules Configured ✅
+              
+              **Branch:** ${branch}
+              
+              **Required Status Checks:**
+              - ✅ CI (format, clippy, tests)
+              - ✅ Code Coverage (codecov)
+              - ✅ Security Audit (cargo-audit)
+              - ✅ License Compliance (cargo-deny)
+              
+              **PR Requirements:**
+              - ✅ At least 1 approving review
+              - ✅ Dismiss stale reviews
+              - ✅ Required conversation resolution
+              - ✅ Linear history required
+              
+              **Additional Rules:**
+              - ✅ Admin enforcement enabled
+              - ✅ Force pushes disabled
+              - ✅ Branch deletion disabled
+              - ✅ Fork syncing allowed
+              `;
+              
+              // Create issue with summary
+              await github.rest.issues.create({
+                owner,
+                repo,
+                title: 'Branch Protection Rules Configured',
+                body: summary,
+                labels: ['infrastructure', 'ci-cd']
+              });
+              
+            } catch (error) {
+              console.error('Error setting up branch protection:', error);
+              
+              // Create issue with error details
+              await github.rest.issues.create({
+                owner,
+                repo,
+                title: 'Branch Protection Setup Failed',
+                body: `
+                ## Error ❌
+                
+                Failed to configure branch protection rules for ${branch}.
+                
+                **Error:** ${error.message}
+                
+                **Solution:**
+                1. Ensure the GitHub token has sufficient permissions
+                2. Check if the repository is under an organization with restricted settings
+                3. Manually configure branch protection in repository settings
+                `,
+                labels: ['infrastructure', 'ci-cd', 'bug']
+              });
+              
+              throw error;
+            }

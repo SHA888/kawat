@@ -1,0 +1,183 @@
+name: Changelog and Version
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  generate-changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Install git-cliff
+        run: |
+          wget -qO- https://github.com/orhun/git-cliff/releases/latest/download/git-cliff-${ARCH}-unknown-linux-musl.tar.gz | tar -xz \
+            && sudo mv git-cliff-${ARCH}-unknown-linux-musl/git-cliff /usr/bin/
+        env:
+          ARCH: x86_64
+          
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Generate changelog
+          if [ "${{ github.event_name }}" = "push" ]; then
+            # On tag push, generate changelog for this release
+            CHANGELOG=$(git-cliff --tag ${{ github.ref_name }} --latest)
+          else
+            # On workflow dispatch, generate full changelog
+            CHANGELOG=$(git-cliff --all)
+          fi
+          
+          # Save to file and output
+          echo "$CHANGELOG" > CHANGELOG.md
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+      - name: Display changelog
+        run: |
+          echo "=== Generated Changelog ==="
+          cat CHANGELOG.md
+          
+      - name: Update CHANGELOG.md in repo
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add CHANGELOG.md
+          git diff --staged --quiet || git commit -m "docs: update changelog"
+          git push
+          
+      - name: Upload changelog artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: changelog
+          path: CHANGELOG.md
+          retention-days: 90
+
+  version-bump:
+    name: Version Bump
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Install git-cliff
+        run: |
+          wget -qO- https://github.com/orhun/git-cliff/releases/latest/download/git-cliff-${ARCH}-unknown-linux-musl.tar.gz | tar -xz \
+            && sudo mv git-cliff-${ARCH}-unknown-linux-musl/git-cliff /usr/bin/
+        env:
+          ARCH: x86_64
+          
+      - name: Bump version
+        id: bump
+        run: |
+          # Get current version
+          CURRENT_VERSION=$(git cliff --bumped --dry-run | grep -oP '## \[\K[^\]]+' || echo "0.1.0")
+          
+          # Determine next version based on conventional commits
+          BUMPED_VERSION=$(git cliff --bumped --dry-run | grep -oP '## \[\K[^\]]+' || echo "$CURRENT_VERSION")
+          
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "bumped_version=$BUMPED_VERSION" >> $GITHUB_OUTPUT
+          
+          echo "Current version: $CURRENT_VERSION"
+          echo "Bumped version: $BUMPED_VERSION"
+          
+      - name: Update Cargo.toml files
+        if: steps.bump.outputs.current_version != steps.bump.outputs.bumped_version
+        run: |
+          NEW_VERSION=${{ steps.bump.outputs.bumped_version }}
+          
+          # Update root Cargo.toml
+          sed -i "s/^version = .*/version = \"$NEW_VERSION\"/" Cargo.toml
+          
+          # Update workspace crates
+          find crates -name Cargo.toml -exec sed -i "s/^version = .*/version = \"$NEW_VERSION\"/" {} \;
+          
+          # Update dependencies
+          find . -name Cargo.toml -exec sed -i "s/kawat-[^,]* = \"[^\"]*\"/kawat-\1 = \"$NEW_VERSION\"/" {} \;
+          
+          echo "Updated version to $NEW_VERSION"
+          
+      - name: Commit and tag
+        if: steps.bump.outputs.current_version != steps.bump.outputs.bumped_version
+        run: |
+          NEW_VERSION=${{ steps.bump.outputs.bumped_version }}
+          
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Commit version changes
+          git add -A
+          git commit -m "chore(release): prepare for v$NEW_VERSION"
+          
+          # Create tag
+          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
+          
+          # Push changes and tag
+          git push
+          git push origin "v$NEW_VERSION"
+          
+      - name: Create Release
+        if: steps.bump.outputs.current_version != steps.bump.outputs.bumped_version
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.bump.outputs.bumped_version }}
+          release_name: Release v${{ steps.bump.outputs.bumped_version }}
+          body: |
+            ## Changes
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ## Installation
+            ```bash
+            cargo install kawat --version ${{ steps.bump.outputs.bumped_version }}
+            ```
+          draft: false
+          prerelease: false
+
+  validate-version:
+    name: Validate Version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Check version consistency
+        run: |
+          # Get version from tag
+          if [ "${{ github.event_name }}" = "push" ] && [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG_VERSION=${{ github.ref_name }}
+            TAG_VERSION=${TAG_VERSION#v}  # Remove 'v' prefix
+            
+            # Check Cargo.toml versions
+            ROOT_VERSION=$(grep '^version' Cargo.toml | head -n1 | sed 's/version = "//; s/"//')
+            
+            echo "Tag version: v$TAG_VERSION"
+            echo "Cargo.toml version: $ROOT_VERSION"
+            
+            if [ "$TAG_VERSION" != "$ROOT_VERSION" ]; then
+              echo "❌ Version mismatch!"
+              echo "Tag version: v$TAG_VERSION"
+              echo "Cargo.toml version: $ROOT_VERSION"
+              exit 1
+            else
+              echo "✅ Versions match!"
+            fi
+          fi
