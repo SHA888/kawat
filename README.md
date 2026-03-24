@@ -1,5 +1,12 @@
 # kawat
 
+[![CI](https://github.com/SHA888/kawat/workflows/CI/badge.svg)](https://github.com/SHA888/kawat/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/SHA888/kawat/branch/main/graph/badge.svg)](https://codecov.io/gh/SHA888/kawat)
+[![Crates.io](https://img.shields.io/crates/v/kawat.svg)](https://crates.io/crates/kawat)
+[![docs.rs](https://docs.rs/kawat/badge.svg)](https://docs.rs/kawat)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/SHA888/kawat/blob/main/LICENSE)
+[![Benchmark](https://img.shields.io/badge/benchmark-passing-brightgreen.svg)](https://github.com/SHA888/kawat/actions/workflows/benchmark.yml)
+
 A Rust library for web content extraction, inspired by [trafilatura](https://github.com/adbar/trafilatura).
 
 *Kawat* is Indonesian for "wire" — the same metallurgical metaphor as *trafilatura* (Italian for "wire drawing"), symbolizing the refinement of raw HTML into clean, structured text.

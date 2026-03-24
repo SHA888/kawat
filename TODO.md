@@ -67,16 +67,16 @@
 
 ### 0.3 Documentation & Deployment
 
-- [ ] Auto-deploy docs to GitHub Pages on main branch updates
-  - [ ] API documentation generation with cargo doc
-  - [ ] Custom theme and search functionality
-  - [ ] Versioned documentation for releases
-- [ ] README badge integration
-  - [ ] CI status badge
-  - [ ] crates.io version badge
-  - [ ] docs.rs documentation badge
-  - [ ] codecov coverage badge
-  - [ ] benchmark performance badge
+- [x] Auto-deploy docs to GitHub Pages on main branch updates
+  - [x] API documentation generation with cargo doc
+  - [x] Custom theme and search functionality
+  - [x] Versioned documentation for releases
+- [x] README badge integration
+  - [x] CI status badge
+  - [x] crates.io version badge
+  - [x] docs.rs documentation badge
+  - [x] codecov coverage badge
+  - [x] benchmark performance badge
 - [ ] Demo site deployment (optional, Phase 4+)
   - [ ] Web interface for testing extraction
   - [ ] Live examples and playground
