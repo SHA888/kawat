@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.1.2 - 2026-03-26
+
+### Added
+- **kawat-html**: Complete HTML tree cleaning and tag normalization pipeline
+  - `tree_cleaning()`: Remove 44 MANUALLY_CLEANED tags and strip 20 MANUALLY_STRIPPED tags
+  - `convert_tags()`: Normalize HTML tags to internal catalog (h1-h6→head, b/strong/em/i→hi, a→ref, ul/ol→list, li→item, br→lb, blockquote→quote, del/s→del, code/pre→code)
+  - `convert_link()`: Resolve relative URLs against base_url using standards-compliant URL resolution
+  - `_is_code_block()`: Distinguish between inline code and code blocks
+  - `handle_textnode()` + `process_node()`: Text extraction and normalization for all element types
+  - `link_density_test()` and `link_density_test_tables()`: Link density filtering for content extraction
+  - `delete_by_link_density()`: Remove high-density link elements with backtracking
+- **kawat-extract**: Custom KawatTree structure for lightweight HTML processing
+  - `KawatNode` and `KawatTree` structs with full traversal and manipulation methods
+  - HTML parsing with proper text/tail distinction
+  - Integration with kawat-html transformations
+  - 23 comprehensive unit tests
+
+### Changed
+- Improved HTML processing pipeline with immutable-first design
+- Enhanced error handling with proper Result types throughout
+
+### Fixed
+- Lifetime syntax errors in tree.rs (explicit `'_` lifetime parameters)
+- Test failures in convert_link and textnode modules
+- Inline code formatting (missing closing backtick)
+
+### Testing
+- 34 kawat-html unit tests (all passing)
+- 23 kawat-extract unit tests (all passing)
+- 57 total tests across all crates (all passing)
+- Pre-commit hooks: Rust Format, Clippy, Cargo Audit (all passing)
+
 ## v0.1.1 - 2026-03-24
 
 ### Added
