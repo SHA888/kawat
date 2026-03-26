@@ -91,7 +91,7 @@ mod tests {
         // h1 should be converted to head
         let head_tags = tree.find_by_tag("head");
         assert!(!head_tags.is_empty());
-        
+
         // b should be converted to hi
         let hi_tags = tree.find_by_tag("hi");
         assert!(!hi_tags.is_empty());
