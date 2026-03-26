@@ -118,7 +118,7 @@
 
 **Status:** ✅ **RELEASED** (v0.1.0 published to crates.io)
 
-### 1.1 kawat-xpath: XPath evaluation layer
+### 0.1.1 kawat-xpath: XPath evaluation layer
 
 - [x] Integrate `sxd_html` + `sxd_xpath` in `eval.rs`
   - [x] Wrapper around sxd parse + evaluate
@@ -135,7 +135,7 @@
   - [x] Created criterion benchmark comparing XPath vs CSS selector performance
   - [x] Benchmarks show performance characteristics for decision making
 
-### 1.2 kawat-html: tree cleaning + tag conversion
+### 0.1.2 kawat-html: tree cleaning + tag conversion
 
 - [ ] `tree_cleaning()`: remove MANUALLY_CLEANED (44 tags) using scraper
   - [ ] Handle immutable `scraper::Html`; use `lol_html` for mutation or rebuild tree
@@ -154,7 +154,7 @@
   - [ ] Options: (A) custom tree struct, (B) `markup5ever_rcdom`, (C) string-based XML
   - [ ] Recommendation: (A) Custom struct
 
-### 1.3 kawat-extract: main content extraction
+### 0.1.3 kawat-extract: main content extraction
 
 - [ ] Internal tree type definition (`KawatTree`, `KawatNode`)
   - [ ] Body, children, tag, text, tail, attributes
@@ -174,7 +174,7 @@
 - [ ] `baseline()` last-resort extraction (JSON-LD→article→p→body)
 - [ ] `html2txt()`
 
-### 1.4 kawat-core: wire it together
+### 0.1.4 kawat-core: wire it together
 
 - [x] `cascade::run()` steps 1, 5, 6, 8a only (no metadata, no fallbacks)
 - [x] `ExtractorOptions` default config
@@ -182,13 +182,13 @@
 - [ ] TXT output (step 12, txt only)
   - [ ] Minimal: just join text nodes
 
-### 1.5 kawat facade + basic test
+### 0.1.5 kawat facade + basic test
 
 - [ ] `kawat::extract()` returns plain text
 - [ ] Golden test: 20 HTML files, compare TXT output with Python trafilatura
   - [ ] Acceptance: ≥70% match
 
-### 1.6 Phase 1 release checklist
+### 0.1.6 Phase 1 release checklist
 
 - [x] `cargo test` passes all unit tests
 - [x] Golden test ≥70% match rate
@@ -209,7 +209,7 @@
 
 **Status:** 🔲 **PENDING**
 
-### 2.1 kawat-readability: readability fallback
+### 0.2.1 kawat-readability: readability fallback
 
 - [ ] Integrate `dom_smoothie` crate
   - [ ] Wrapper matching `try_readability()` interface

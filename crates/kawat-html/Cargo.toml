@@ -13,3 +13,5 @@ once_cell = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
 encoding_rs = { workspace = true }
+url = { workspace = true }
+regex = { workspace = true }

@@ -1,5 +1,6 @@
-use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use criterion::{Criterion, criterion_group, criterion_main};
 use kawat_xpath::{CompiledXpaths, XpathEngine};
+use std::hint::black_box;
 
 fn benchmark_xpath_vs_css(c: &mut Criterion) {
     let html = r#"
