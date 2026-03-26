@@ -123,7 +123,7 @@ fn handle_code(text: &str, attributes: &str) -> Option<String> {
         Some(format!("\n```\n{trimmed}\n```\n"))
     } else {
         debug!("Handling inline code: {}", trimmed);
-        Some(format!("`{trimmed}"))
+        Some(format!("`{trimmed}`"))
     }
 }
 
