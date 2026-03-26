@@ -9,7 +9,15 @@
 pub mod comments;
 pub mod content;
 pub mod handlers;
+pub mod parser;
+pub mod transforms;
+pub mod tree;
 pub mod wild;
+
+// Export tree types for external use
+pub use parser::{ParseError, parse_html_to_tree, tree_to_html};
+pub use transforms::{apply_html_transformations, apply_tag_conversion, apply_tree_cleaning};
+pub use tree::{KawatNode, KawatTree};
 
 // TODO: uncomment when functions are implemented
 // pub use content::extract_content;

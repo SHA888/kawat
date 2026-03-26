@@ -137,27 +137,34 @@
 
 ### 0.1.2 kawat-html: tree cleaning + tag conversion
 
-- [ ] `tree_cleaning()`: remove MANUALLY_CLEANED (44 tags) using scraper
-  - [ ] Handle immutable `scraper::Html`; use `lol_html` for mutation or rebuild tree
-- [ ] `tree_cleaning()`: strip MANUALLY_STRIPPED (20 tags) keeping text
-- [ ] Handle table-in-figure edge case (change `<figure>` containing `<table>` to `<div>`)
-- [ ] Preserve `<img>` tags when `options.images=true`
-- [ ] `convert_tags()`: h1-h6→head, b/strong/em/i→hi, a→ref, ul/ol→list, li→item, br→lb, blockquote→quote, del/s→del, code/pre→code
-  - [ ] Critical tag normalization logic
-- [ ] `convert_tags()`: `_is_code_block()` detection (code vs. inline code)
-- [ ] `convert_tags()`: `convert_link()` with base_url resolution
-- [ ] `link_density_test()` for generic elements
-- [ ] `link_density_test_tables()` specialized for tables
-- [ ] `delete_by_link_density()` with backtracking
-- [ ] `handle_textnode()` + `process_node()`
-- [ ] **Decision: internal tree representation**
-  - [ ] Options: (A) custom tree struct, (B) `markup5ever_rcdom`, (C) string-based XML
-  - [ ] Recommendation: (A) Custom struct
+- [x] `tree_cleaning()`: remove MANUALLY_CLEANED (44 tags) using regex
+  - [x] Handle immutable `scraper::Html`; use regex for mutation
+- [x] `tree_cleaning()`: strip MANUALLY_STRIPPED (20 tags) keeping text
+- [x] Handle table-in-figure edge case (change `<figure>` containing `<table>` to `<div>`)
+- [x] Preserve `<img>` tags when `options.images=true`
+- [x] `convert_tags()`: h1-h6→head, b/strong/em/i→hi, a→ref, ul/ol→list, li→item, br→lb, blockquote→quote, del/s→del, code/pre→code
+  - [x] Critical tag normalization logic
+- [x] `convert_tags()`: `_is_code_block()` detection (code vs. inline code)
+- [x] `convert_tags()`: `convert_link()` with base_url resolution
+- [x] `link_density_test()` for generic elements
+- [x] `link_density_test_tables()` specialized for tables
+- [x] `delete_by_link_density()` with backtracking
+- [x] `handle_textnode()` + `process_node()`
+  - [x] Dispatcher for different element types (titles, paragraphs, tables, lists, quotes, code, etc.)
+  - [x] Text extraction and normalization
+  - [x] 14 comprehensive unit tests
+- [x] **Decision: internal tree representation**
+  - [x] Options: (A) custom tree struct, (B) `markup5ever_rcdom`, (C) string-based XML
+  - [x] **CHOSEN: (A) Custom struct** - lightweight, full control, trafilatura-optimized
 
 ### 0.1.3 kawat-extract: main content extraction
 
-- [ ] Internal tree type definition (`KawatTree`, `KawatNode`)
-  - [ ] Body, children, tag, text, tail, attributes
+- [x] Internal tree type definition (`KawatTree`, `KawatNode`)
+  - [x] Body, children, tag, text, tail, attributes
+  - [x] Full HTML parsing with text/tail distinction
+  - [x] Tree traversal and manipulation methods
+  - [x] Integration with kawat-html transformations
+  - [x] 23 comprehensive unit tests (all passing)
 - [ ] `_extract()`: iterate BODY_XPATH, first match wins
 - [ ] `prune_unwanted_sections()`: OVERALL_DISCARD + link density passes
 - [ ] `handle_textelem()`: dispatcher by tag type

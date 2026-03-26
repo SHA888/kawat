@@ -6,8 +6,10 @@ pub mod clean;
 pub mod convert;
 pub mod density;
 pub mod tags;
+pub mod textnode;
 
 pub use clean::tree_cleaning;
 pub use convert::convert_tags;
 pub use density::link_density_test;
 pub use tags::{MANUALLY_CLEANED, MANUALLY_STRIPPED, TAG_CATALOG};
+pub use textnode::{handle_textnode, process_node};

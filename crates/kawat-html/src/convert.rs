@@ -1,22 +1,79 @@
 //! Tag conversion: normalize HTML tags to internal tag set.
 //! h1-h6 → head, b/strong/em/i → hi, a → ref, ul/ol → list, br → lb, etc.
+use regex::Regex;
 use tracing::trace;
+use url::Url;
+
+/// Resolve a URL against a base URL.
+///
+/// # Arguments
+/// * `url_str` - The URL to resolve (may be relative or absolute)
+/// * `base_url` - The base URL to resolve against
+///
+/// # Returns
+/// The resolved absolute URL, or the original URL if resolution fails
+fn resolve_url(url_str: &str, base_url: Option<&str>) -> String {
+    if let Some(base) = base_url {
+        if let Ok(base_parsed) = Url::parse(base) {
+            if let Ok(resolved) = base_parsed.join(url_str) {
+                return resolved.to_string();
+            }
+        }
+    }
+    url_str.to_string()
+}
+
+/// Convert link href attributes to resolved absolute URLs.
+///
+/// # Arguments
+/// * `html` - Input HTML string
+/// * `base_url` - Base URL for resolving relative links
+///
+/// # Returns
+/// HTML with resolved link URLs
+fn convert_link(html: &str, base_url: Option<&str>) -> Result<String, Box<dyn std::error::Error>> {
+    if base_url.is_none() {
+        return Ok(html.to_string());
+    }
+
+    // Find all href attributes in ref tags and resolve them
+    let href_regex = Regex::new(r#"href="([^"]*)""#)?;
+    let mut result = html.to_string();
+
+    for caps in href_regex.captures_iter(html) {
+        if let Some(href_match) = caps.get(1) {
+            let original_href = href_match.as_str();
+            let resolved_href = resolve_url(original_href, base_url);
+
+            if original_href != resolved_href {
+                let old_attr = format!(r#"href="{original_href}"""#);
+                let new_attr = format!(r#"href="{resolved_href}"""#);
+                result = result.replace(&old_attr, &new_attr);
+            }
+        }
+    }
+
+    Ok(result)
+}
 
 /// Convert HTML tags to internal tag catalog.
 ///
 /// # Arguments
 /// * `html` - Input HTML string
-/// * `base_url` - Base URL for resolving relative links (not implemented yet)
+/// * `base_url` - Base URL for resolving relative links
 ///
 /// # Returns
 /// HTML with normalized tags
 pub fn convert_tags(
     html: &str,
-    _base_url: Option<&str>,
+    base_url: Option<&str>,
 ) -> Result<String, Box<dyn std::error::Error>> {
     trace!("Starting tag conversion on {} bytes", html.len());
 
     let mut result = html.to_string();
+
+    // Resolve links first (before converting tag names)
+    result = convert_link(&result, base_url)?;
 
     // Simple string replacements for tag conversion
     // Convert headings to 'head'
@@ -160,5 +217,47 @@ mod tests {
         assert!(result.contains("<del>Deleted</del>"));
         assert!(result.contains("<del>Struck</del>"));
         assert!(!result.contains("<s>"));
+    }
+
+    #[test]
+    fn test_convert_link_without_base_url() {
+        let html =
+            r#"<div><a href="/page">Link</a><a href="https://example.com">External</a></div>"#;
+        let result = convert_tags(html, None).unwrap();
+        // URLs should remain unchanged without base_url
+        assert!(result.contains(r#"href="/page""#));
+        assert!(result.contains(r#"href="https://example.com""#));
+    }
+
+    #[test]
+    fn test_convert_link_with_base_url() {
+        let html = r#"<div><a href="/page">Link</a><a href="page2">Relative</a></div>"#;
+        let base_url = "https://example.com/dir/";
+        let result = convert_tags(html, Some(base_url)).unwrap();
+
+        // Absolute path should be resolved against base
+        assert!(result.contains(r#"href="https://example.com/page""#));
+        // Relative path should be resolved against base
+        assert!(result.contains(r#"href="https://example.com/dir/page2""#));
+    }
+
+    #[test]
+    fn test_convert_link_absolute_url() {
+        let html = r#"<div><a href="https://other.com/page">External</a></div>"#;
+        let base_url = "https://example.com/";
+        let result = convert_tags(html, Some(base_url)).unwrap();
+
+        // Absolute URLs should remain unchanged
+        assert!(result.contains(r#"href="https://other.com/page""#));
+    }
+
+    #[test]
+    fn test_convert_link_invalid_base_url() {
+        let html = r#"<div><a href="/page">Link</a></div>"#;
+        let base_url = "not a valid url";
+        let result = convert_tags(html, Some(base_url)).unwrap();
+
+        // Should fall back to original URL if base_url is invalid
+        assert!(result.contains(r#"href="/page""#));
     }
 }
