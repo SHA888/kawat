@@ -110,7 +110,7 @@ impl KawatNode {
     }
 
     /// Get an iterator over all descendants of this node.
-    pub fn iter_descendants(&self) -> DescendantsIter {
+    pub fn iter_descendants(&self) -> DescendantsIter<'_> {
         DescendantsIter::new(self)
     }
 
@@ -237,7 +237,7 @@ impl KawatTree {
     }
 
     /// Get an iterator over all descendants of the root.
-    pub fn iter_descendants(&self) -> DescendantsIter {
+    pub fn iter_descendants(&self) -> DescendantsIter<'_> {
         self.root.iter_descendants()
     }
 }
