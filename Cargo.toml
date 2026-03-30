@@ -33,7 +33,7 @@ scraper = "0.26"
 lol_html = "2"
 
 # Readability fallback
-dom_smoothie = "0.5"
+dom_smoothie = "0.17"
 
 # Date handling
 chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
