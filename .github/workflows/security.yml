@@ -249,7 +249,7 @@ jobs:
           
       - name: Create Update PR
         if: steps.outdated.outputs.outdated_found == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: update dependencies"
