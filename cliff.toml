@@ -103,7 +103,7 @@ repo = "kawat"
 # Create GitHub releases
 create_release = true
 # Release title template
-release_title = "Release {{ version | trim_start_matches(pat="v") }}"
+release_title = 'Release {{ version | trim_start_matches(pat="v") }}'
 # Release body template
 release_body = """
 {{ changelog }}

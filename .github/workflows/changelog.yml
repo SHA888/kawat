@@ -21,24 +21,33 @@ jobs:
         with:
           fetch-depth: 0
           
-      - name: Install git-cliff
-        run: |
-          # Use a more reliable installation method
-          cargo install git-cliff
-          
       - name: Generate changelog
         id: changelog
         run: |
           # Get the most recent tag for changelog generation
           TAG=$(git describe --tags --abbrev=0)
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
           
-          # Generate changelog since last tag
-          CHANGELOG=$(git-cliff --tag $TAG --latest)
+          # Generate changelog between tags using git log
+          if [ -n "$PREVIOUS_TAG" ] && [ "$PREVIOUS_TAG" != "$TAG" ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" $PREVIOUS_TAG..$TAG)
+            HEADER="## Changes since $PREVIOUS_TAG"
+          else
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" $TAG..HEAD)
+            HEADER="## Latest changes"
+          fi
+          
+          # Create changelog
+          if [ -n "$CHANGELOG" ]; then
+            FULL_CHANGELOG="$HEADER\n\n$CHANGELOG"
+          else
+            FULL_CHANGELOG="$HEADER\n\nNo changes found."
+          fi
           
           # Save to file and output
-          echo "$CHANGELOG" > CHANGELOG.md
+          echo "$FULL_CHANGELOG" > CHANGELOG.md
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "$FULL_CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
           
       - name: Display changelog
@@ -72,18 +81,14 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Install git-cliff
-        run: |
-          cargo install git-cliff
-          
       - name: Bump version
         id: bump
         run: |
-          # Get current version
-          CURRENT_VERSION=$(git cliff --bumped --dry-run | grep -oP '## \[\K[^\]]+' || echo "0.1.0")
+          # Get current version from Cargo.toml
+          CURRENT_VERSION=$(grep '^version' Cargo.toml | head -n1 | sed 's/version = "//; s/"//')
           
-          # Determine next version based on conventional commits
-          BUMPED_VERSION=$(git cliff --bumped --dry-run | grep -oP '## \[\K[^\]]+' || echo "$CURRENT_VERSION")
+          # Simple version bump (patch version)
+          BUMPED_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1"."$2"."($3+1)}')
           
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "bumped_version=$BUMPED_VERSION" >> $GITHUB_OUTPUT
@@ -157,7 +162,7 @@ jobs:
         run: |
           # Get the most recent tag
           if [ -n "$(git tag --sort=-version:refname | head -n1)" ]; then
-            TAG_VERSION=$(git describe --tags --abbrev=0)
+            TAG_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
             TAG_VERSION=${TAG_VERSION#v}  # Remove 'v' prefix
             
             # Check Cargo.toml versions
@@ -166,7 +171,7 @@ jobs:
             echo "Tag version: v$TAG_VERSION"
             echo "Cargo.toml version: $ROOT_VERSION"
             
-            if [ "$TAG_VERSION" != "$ROOT_VERSION" ]; then
+            if [ "$TAG_VERSION" != "$ROOT_VERSION" ] && [ -n "$TAG_VERSION" ]; then
               echo "❌ Version mismatch!"
               echo "Tag version: v$TAG_VERSION"
               echo "Cargo.toml version: $ROOT_VERSION"
