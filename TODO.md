@@ -165,21 +165,21 @@
   - [x] Tree traversal and manipulation methods
   - [x] Integration with kawat-html transformations
   - [x] 23 comprehensive unit tests (all passing)
-- [ ] `_extract()`: iterate BODY_XPATH, first match wins
-- [ ] `prune_unwanted_sections()`: OVERALL_DISCARD + link density passes
-- [ ] `handle_textelem()`: dispatcher by tag type
-- [ ] `handle_titles()`
-- [ ] `handle_paragraphs()` (most complex handler)
-- [ ] `handle_formatting()`
-- [ ] `handle_lists()`
-- [ ] `handle_quotes()` + `handle_code_blocks()`
-- [ ] `handle_table()` (includes cell type detection, nested content)
-- [ ] `handle_image()`
-- [ ] `handle_other_elements()`
-- [ ] `recover_wild_text()`
-- [ ] `extract_content()` wrapper
-- [ ] `baseline()` last-resort extraction (JSON-LD→article→p→body)
-- [ ] `html2txt()`
+- [x] `_extract()`: iterate BODY_XPATH, first match wins
+- [x] `prune_unwanted_sections()`: OVERALL_DISCARD + link density passes
+- [x] `handle_textelem()`: dispatcher by tag type
+- [x] `handle_titles()`
+- [x] `handle_paragraphs()` (most complex handler)
+- [x] `handle_formatting()`
+- [x] `handle_lists()`
+- [x] `handle_quotes()` + `handle_code_blocks()`
+- [x] `handle_table()` (includes cell type detection, nested content)
+- [x] `handle_image()`
+- [x] `handle_other_elements()`
+- [x] `recover_wild_text()`
+- [x] `extract_content()` wrapper
+- [x] `baseline()` last-resort extraction (JSON-LD→article→p→body)
+- [x] `html2txt()`
 
 ### 0.1.4 kawat-core: wire it together
 

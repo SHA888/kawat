@@ -20,5 +20,5 @@ pub use transforms::{apply_html_transformations, apply_tag_conversion, apply_tre
 pub use tree::{KawatNode, KawatTree};
 
 // TODO: uncomment when functions are implemented
-// pub use content::extract_content;
+pub use content::{ExtractionError, baseline, extract_content, html2txt};
 // pub use comments::extract_comments;
