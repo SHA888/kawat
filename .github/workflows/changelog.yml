@@ -1,9 +1,11 @@
 name: Changelog and Version
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches: [main]
   workflow_dispatch:
 
 env:
@@ -13,7 +15,7 @@ jobs:
   generate-changelog:
     name: Generate Changelog
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
+    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -21,25 +23,17 @@ jobs:
           
       - name: Install git-cliff
         run: |
-          # Download with proper error handling
-          wget --tries=3 --timeout=30 -O git-cliff.tar.gz https://github.com/orhun/git-cliff/releases/latest/download/git-cliff-${ARCH}-unknown-linux-musl.tar.gz
-          tar -xzf git-cliff.tar.gz
-          sudo mv git-cliff-${ARCH}-unknown-linux-musl/git-cliff /usr/bin/
-          rm -f git-cliff.tar.gz
-        env:
-          ARCH: x86_64
+          # Use a more reliable installation method
+          cargo install git-cliff
           
       - name: Generate changelog
         id: changelog
         run: |
-          # Generate changelog
-          if [ "${{ github.event_name }}" = "push" ]; then
-            # On tag push, generate changelog for this release
-            CHANGELOG=$(git-cliff --tag ${{ github.ref_name }} --latest)
-          else
-            # On workflow dispatch, generate full changelog
-            CHANGELOG=$(git-cliff --all)
-          fi
+          # Get the most recent tag for changelog generation
+          TAG=$(git describe --tags --abbrev=0)
+          
+          # Generate changelog since last tag
+          CHANGELOG=$(git-cliff --tag $TAG --latest)
           
           # Save to file and output
           echo "$CHANGELOG" > CHANGELOG.md
@@ -80,10 +74,7 @@ jobs:
           
       - name: Install git-cliff
         run: |
-          wget -qO- https://github.com/orhun/git-cliff/releases/latest/download/git-cliff-${ARCH}-unknown-linux-musl.tar.gz | tar -xz \
-            && sudo mv git-cliff-${ARCH}-unknown-linux-musl/git-cliff /usr/bin/
-        env:
-          ARCH: x86_64
+          cargo install git-cliff
           
       - name: Bump version
         id: bump
@@ -164,9 +155,9 @@ jobs:
           
       - name: Check version consistency
         run: |
-          # Get version from tag
-          if [ "${{ github.event_name }}" = "push" ] && [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            TAG_VERSION=${{ github.ref_name }}
+          # Get the most recent tag
+          if [ -n "$(git tag --sort=-version:refname | head -n1)" ]; then
+            TAG_VERSION=$(git describe --tags --abbrev=0)
             TAG_VERSION=${TAG_VERSION#v}  # Remove 'v' prefix
             
             # Check Cargo.toml versions
@@ -183,4 +174,6 @@ jobs:
             else
               echo "✅ Versions match!"
             fi
+          else
+            echo "No tags found, skipping version validation"
           fi

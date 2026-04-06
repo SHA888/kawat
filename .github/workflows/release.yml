@@ -1,9 +1,11 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_run:
+    workflows: ["Changelog and Version"]
+    types:
+      - completed
+    branches: [main]
 
 env:
   CARGO_TERM_COLOR: always
@@ -13,15 +15,28 @@ jobs:
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          # Get the most recent tag
+          TAG=$(git describe --tags --abbrev=0)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Latest tag: $TAG"
+          
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref }}
-          name: Release ${{ github.ref }}
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          name: Release ${{ steps.get_tag.outputs.tag }}
           draft: false
           prerelease: false
           generate_release_notes: true
