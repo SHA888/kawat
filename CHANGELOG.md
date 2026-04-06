@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.1.3 - 2026-04-07
+
+### Added
+- **kawat-extract**: Complete content extraction pipeline mirroring trafilatura
+  - `extract_content()`: Main wrapper orchestrating full extraction process
+  - `_extract()`: BODY_XPATH iteration with first-match wins logic
+  - `prune_unwanted_sections()`: Class filtering + link density calculation
+  - `handle_textelem()`: Dispatcher for all HTML element types
+  - `handle_titles()`: Markdown heading generation (h1-h6)
+  - `handle_paragraphs()`: Complex paragraph processing with nested elements
+  - `handle_formatting()`: Bold, italic, underline, span formatting
+  - `handle_lists()`: Ordered/unordered lists with nested list support
+  - `handle_quotes()` + `handle_code_blocks()`: Blockquotes and code processing
+  - `handle_table()`: Markdown table generation with header separators
+  - `handle_image()`: Image extraction with alt text
+  - `handle_other_elements()`: Fallback handler for unknown elements
+  - `recover_wild_text()`: Wild text recovery for short results
+  - `baseline()`: Last-resort extraction fallback chain
+  - `html2txt()`: HTML-to-plain text conversion
+- **Security**: Markdown escaping to prevent injection attacks
+- **Content Quality**: Link density calculation for better content pruning
+- **Testing**: 38 comprehensive unit tests (all passing)
+- **Code Quality**: Clippy warnings fixed, proper error handling
+
+### Changed
+- Enhanced content extraction with proper markdown formatting
+- Improved nested element handling in paragraphs and lists
+- Better text preservation in `html2txt()` function
+- Optimized tree traversal and content processing
+
+### Fixed
+- Code block markdown formatting (missing closing backticks)
+- Table markdown generation (missing header separators)
+- Nested list handling with proper indentation
+- Content pruning logic for unwanted sections
+- Text content extraction with proper whitespace preservation
+
+### Testing
+- 38 kawat-extract unit tests (all passing)
+- 76 total tests across all crates (all passing)
+- Pre-commit hooks: Rust Format, Clippy, Cargo Audit (all passing)
+
 ## v0.1.2 - 2026-03-26
 
 ### Added

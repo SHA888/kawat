@@ -13,13 +13,16 @@ A Rust library for web content extraction, inspired by [trafilatura](https://git
 
 ## Features
 
-- **Main text extraction** with multi-algorithm fallback cascade
+- **Main text extraction** with complete trafilatura-compatible pipeline
+- **Content extraction handlers** for all HTML elements (titles, paragraphs, lists, tables, quotes, code, images)
+- **Markdown output** with proper formatting and escaping for security
+- **Link density calculation** for intelligent content pruning
+- **XPath evaluation** with BODY_XPATH expressions for content area detection
 - **Metadata extraction**: title, author, date, categories, tags, license
 - **Comment extraction** separated from main content
 - **Date extraction** via `htmldate-rs` (standalone crate)
 - **Deduplication** at sentence, paragraph, and document level
 - **Multiple output formats**: TXT, Markdown, JSON, XML, XML-TEI, CSV, HTML
-- **XPath evaluation on HTML** via `sxd_html` + `sxd_xpath`
 - **CLI** for single URL or batch processing
 
 ## Extraction cascade
@@ -43,6 +46,17 @@ let text = extract(&html, &ExtractorOptions::default()).unwrap();
 println!("{text}");
 ```
 
+### Direct kawat-extract usage
+
+```rust
+use kawat_extract::{extract_content, parse_html_to_tree};
+
+let html = std::fs::read_to_string("page.html").unwrap();
+let tree = parse_html_to_tree(&html).unwrap();
+let content = extract_content(&tree).unwrap();
+println!("{}", content); // Markdown formatted content
+```
+
 ## CLI
 
 ```bash
@@ -64,7 +78,7 @@ curl -s https://example.org | kawat
 | `kawat-core` | Extraction cascade orchestrator |
 | `kawat-html` | Tree cleaning, tag normalization |
 | `kawat-xpath` | XPath on HTML (sxd_html + sxd_xpath) |
-| `kawat-extract` | Main content extractor |
+| `kawat-extract` | **NEW: Complete content extraction pipeline** |
 | `kawat-readability` | Readability fallback (dom_smoothie) |
 | `kawat-justext` | Pure Rust justext port |
 | `kawat-metadata` | Title, author, OG, JSON-LD |
