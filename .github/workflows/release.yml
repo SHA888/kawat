@@ -49,12 +49,21 @@ jobs:
             <!-- TODO: Add release notes here -->
             
             ## Installation
+            ### From crates.io (manual publishing)
             ```bash
             cargo install kawat
             ```
             
+            ### From source
+            ```bash
+            cargo install --git https://github.com/SHA888/kawat.git --tag ${{ steps.get_tag.outputs.tag }}
+            ```
+            
             ## Downloads
             Check the assets below for pre-compiled binaries.
+            
+            ## Note
+            Crates.io publishing is done manually to ensure quality control.
 
   build-and-upload:
     name: Build and Upload
@@ -135,136 +144,3 @@ jobs:
           asset_path: ${{ matrix.os == 'windows-latest' && format('{0}.zip', matrix.asset_name) || format('{0}.tar.gz', matrix.asset_name) }}
           asset_name: ${{ matrix.os == 'windows-latest' && format('{0}.zip', matrix.asset_name) || format('{0}.tar.gz', matrix.asset_name) }}
           asset_content_type: application/octet-stream
-
-  publish-crates:
-    name: Publish to crates.io
-    needs: create-release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        
-      - name: Cache cargo registry
-        uses: actions/cache@v5
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-            
-      - name: Wait for binaries to be uploaded
-        run: sleep 30
-        
-      - name: Login to crates.io
-        run: cargo login ${{ secrets.CRATES_IO_TOKEN }}
-        
-      - name: Publish htmldate-rs first (independent)
-        run: |
-          cd crates/htmldate-rs
-          # Retry up to 3 times with 30s delay between retries
-          for i in {1..3}; do
-            if cargo publish --no-verify; then
-              echo "✓ htmldate-rs published successfully"
-              break
-            else
-              echo "✗ Publish attempt $i failed, retrying in 30s..."
-              if [ $i -eq 3 ]; then
-                echo "✗ Failed to publish htmldate-rs after 3 attempts"
-                exit 1
-              fi
-              sleep 30
-            fi
-          done
-          # Wait for crates.io indexing
-          echo "Waiting for crates.io indexing..."
-          for i in {1..12}; do
-            if cargo search htmldate-rs --limit 1 | grep -q "htmldate-rs"; then
-              echo "✓ htmldate-rs is now indexed"
-              break
-            fi
-            echo "Waiting for indexing... ($i/12)"
-            sleep 10
-          done
-          
-      - name: Publish core dependencies
-        run: |
-          # Publish in dependency order with retries
-          crates=("kawat-xpath" "kawat-dedup" "kawat-output" "kawat-readability" "kawat-justext" "kawat-html" "kawat-metadata" "kawat-extract" "kawat-core")
-          
-          for crate in "${crates[@]}"; do
-            echo "Publishing $crate..."
-            cd crates/$crate
-            
-            # Retry up to 3 times
-            for i in {1..3}; do
-              if cargo publish --no-verify; then
-                echo "✓ $crate published successfully"
-                break
-              else
-                echo "✗ Publish attempt $i failed, retrying in 30s..."
-                if [ $i -eq 3 ]; then
-                  echo "✗ Failed to publish $crate after 3 attempts"
-                  exit 1
-                fi
-                sleep 30
-              fi
-            done
-            
-            # Wait for indexing
-            echo "Waiting for $crate indexing..."
-            for i in {1..12}; do
-              if cargo search $crate --limit 1 | grep -q "$crate"; then
-                echo "✓ $crate is now indexed"
-                break
-              fi
-              echo "Waiting for indexing... ($i/12)"
-              sleep 10
-            done
-            
-            cd ../..
-          done
-          
-      - name: Publish kawat-cli
-        run: |
-          cd crates/kawat-cli
-          for i in {1..3}; do
-            if cargo publish --no-verify; then
-              echo "✓ kawat-cli published successfully"
-              break
-            else
-              echo "✗ Publish attempt $i failed, retrying in 30s..."
-              if [ $i -eq 3 ]; then
-                echo "✗ Failed to publish kawat-cli after 3 attempts"
-                exit 1
-              fi
-              sleep 30
-            fi
-          done
-          
-      - name: Publish main kawat crate
-        run: |
-          for i in {1..3}; do
-            if cargo publish --no-verify; then
-              echo "✓ kawat published successfully"
-              break
-            else
-              echo "✗ Publish attempt $i failed, retrying in 30s..."
-              if [ $i -eq 3 ]; then
-                echo "✗ Failed to publish kawat after 3 attempts"
-                exit 1
-              fi
-              sleep 30
-            fi
-          done
-        
-      - name: Verify published crates
-        run: |
-          # Check that all crates are available
-          cargo search htmldate-rs --limit 1
-          cargo search kawat --limit 1
-# Workflow trigger fix
