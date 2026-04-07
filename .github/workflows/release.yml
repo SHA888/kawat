@@ -7,6 +7,11 @@ on:
       - completed
     branches: [main]
 
+# Set permissions for the workflow
+permissions:
+  contents: write
+  releases: write
+
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
