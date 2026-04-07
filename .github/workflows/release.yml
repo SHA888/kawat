@@ -268,3 +268,4 @@ jobs:
           # Check that all crates are available
           cargo search htmldate-rs --limit 1
           cargo search kawat --limit 1
+# Workflow trigger fix
