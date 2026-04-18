@@ -4,6 +4,16 @@
 //! Supports: TXT, Markdown, JSON, XML, XML-TEI, CSV, HTML.
 
 use std::str::FromStr;
+use thiserror::Error;
+
+/// Error type for output format operations.
+#[derive(Debug, Error)]
+#[non_exhaustive]
+pub enum OutputError {
+    /// Unknown output format string.
+    #[error("unknown format: {0}")]
+    UnknownFormat(String),
+}
 
 pub mod csv_output;
 pub mod html_output;
@@ -13,8 +23,11 @@ pub mod txt;
 pub mod xml_output;
 pub mod xml_tei;
 
+pub use txt::{to_txt, to_txt_body_only};
+
 /// Supported output formats.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[non_exhaustive]
 pub enum OutputFormat {
     Txt,
     Markdown,
@@ -26,7 +39,7 @@ pub enum OutputFormat {
 }
 
 impl FromStr for OutputFormat {
-    type Err = String;
+    type Err = OutputError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -37,7 +50,7 @@ impl FromStr for OutputFormat {
             "xmltei" => Ok(Self::XmlTei),
             "csv" => Ok(Self::Csv),
             "html" => Ok(Self::Html),
-            _ => Err(format!("Unknown format: {s}")),
+            _ => Err(OutputError::UnknownFormat(s.to_string())),
         }
     }
 }

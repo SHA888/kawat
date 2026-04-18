@@ -30,3 +30,6 @@ Cargo.lock
 # OS
 Thumbs.db
 .DS_Store
+.skill/
+.cursor/rules/skill-context.md
+.windsurf/rules/skill-context.md

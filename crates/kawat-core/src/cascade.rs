@@ -6,15 +6,20 @@ use crate::config::ExtractorOptions;
 use crate::document::Document;
 
 /// Run the full extraction cascade.
-pub fn run(html: &str, _options: &ExtractorOptions) -> Result<Document, ExtractionError> {
+pub fn run(html: &str, options: &ExtractorOptions) -> Result<Document, ExtractionError> {
     // Step 1: Parse HTML
-    let _document = scraper::Html::parse_document(html);
+    let document = scraper::Html::parse_document(html);
 
     // Step 2: Quick language check (fast mode only)
     // TODO: check_html_lang()
 
     // Step 3: Extract metadata (if with_metadata)
-    // TODO: kawat_metadata::extract_metadata()
+    let metadata = if options.with_metadata {
+        // TODO: kawat_metadata::extract_metadata(&document, ...)
+        kawat_metadata::DocumentMetadata::default()
+    } else {
+        kawat_metadata::DocumentMetadata::default()
+    };
 
     // Step 4: User-specified selector pruning
     // TODO: prune by options.prune_selectors
@@ -32,8 +37,15 @@ pub fn run(html: &str, _options: &ExtractorOptions) -> Result<Document, Extracti
     //   8a: kawat_extract::extract_content()
     //   8b: if !fast → compare::compare_extraction()
     //   8c: if still short → baseline()
+    let body = extract_body_text(&document);
 
     // Step 9: Size checks
+    if body.len() < options.min_extracted_size {
+        return Err(ExtractionError::TooShort(
+            body.len(),
+            options.min_extracted_size,
+        ));
+    }
 
     // Step 10: Dedup check
     // TODO: kawat_dedup
@@ -41,8 +53,20 @@ pub fn run(html: &str, _options: &ExtractorOptions) -> Result<Document, Extracti
     // Step 11: Language filter
     // TODO: lingua (optional)
 
-    // Step 12: Format output
-    // TODO: kawat_output
+    // Step 12: Format output - handled by caller via Document::to_formatted_string
 
-    todo!("full cascade implementation")
+    Ok(Document {
+        metadata,
+        body,
+        comments: None,
+        raw_text: None,
+        text: None,
+    })
+}
+
+/// Extract body text from parsed HTML (minimal baseline implementation).
+fn extract_body_text(document: &scraper::Html) -> String {
+    let root = document.root_element();
+    let text = root.text().collect::<Vec<_>>().join(" ");
+    text.split_whitespace().collect::<Vec<_>>().join(" ")
 }

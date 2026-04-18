@@ -186,8 +186,8 @@
 - [x] `cascade::run()` steps 1, 5, 6, 8a only (no metadata, no fallbacks)
 - [x] `ExtractorOptions` default config
 - [x] `Document` struct
-- [ ] TXT output (step 12, txt only)
-  - [ ] Minimal: just join text nodes
+- [x] TXT output (step 12, txt only)
+  - [x] Minimal: just join text nodes
 
 ### 0.1.5 kawat facade + basic test
 

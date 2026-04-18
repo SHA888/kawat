@@ -25,9 +25,21 @@ pub struct Document {
 
 impl Document {
     /// Convert to the configured output format.
-    pub fn to_formatted_string(&self, _options: &ExtractorOptions) -> String {
-        // TODO: dispatch to kawat_output formatters
-        self.body.clone()
+    pub fn to_formatted_string(&self, options: &ExtractorOptions) -> String {
+        use kawat_output::OutputFormat;
+
+        match options.format {
+            OutputFormat::Txt if options.with_metadata => kawat_output::to_txt(
+                self.metadata.title.as_deref(),
+                self.metadata.author.as_deref(),
+                self.metadata.date.as_deref(),
+                self.metadata.url.as_deref(),
+                &self.body,
+            ),
+            OutputFormat::Txt => kawat_output::to_txt_body_only(&self.body),
+            // TODO: implement other output formats
+            _ => self.body.clone(),
+        }
     }
 
     /// Convert to a HashMap for Python-dict-like access.
