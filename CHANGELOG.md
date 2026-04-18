@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.1.4 - 2026-04-18
+
+### Added
+- **kawat-core**: Core extraction orchestrator (0.1.4 milestone)
+  - `cascade::run()`: Full extraction pipeline with steps 1, 5, 6, 8a
+  - `ExtractorOptions`: Configuration struct mirroring trafilatura Extractor
+  - `Document`: Extracted document model with metadata and body text
+  - Size validation with `min_extracted_size` threshold
+- **kawat-output**: TXT output formatter
+  - `to_txt()`: Plain text output with metadata header
+  - `to_txt_body_only()`: Body text without headers
+  - `OutputFormat` enum with `#[non_exhaustive]` for forward compatibility
+  - `OutputError` custom error type using `thiserror`
+- **CI/CD**: GitHub Actions workflow with cargo-deny
+  - License audit with explicit allow list
+  - Security advisory checking
+  - Dependency banning for duplicates
+
+### Changed
+- `Document::to_formatted_string()` now dispatches to format-specific handlers
+- TXT output gates metadata header on `with_metadata` option (matches trafilatura behavior)
+- Pre-commit hooks include cargo-deny for local license checking
+
+### Fixed
+- Deprecated `deny` key removed from cargo-deny config
+- Added missing licenses: `Unicode-3.0`, `Zlib`
+
 ## v0.1.3 - 2026-04-07
 
 ### Added
