@@ -1,0 +1,9 @@
+Photo Gallery
+This article includes several images.
+Description of the first photo.
+Description of the second photo.
+Images with alt text should be handled.
+This article includes several images.
+Description of the first photo.
+Description of the second photo.
+Images with alt text should be handled.

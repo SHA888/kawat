@@ -1,0 +1,162 @@
+[
+  {
+    "name": "01_simple_article",
+    "html_file": "fixtures/01_simple_article.html",
+    "expected_file": "expected/01_simple_article.txt",
+    "expected_with_meta": "expected/01_simple_article_meta.txt",
+    "expected_len": 86,
+    "expected_meta_len": 113
+  },
+  {
+    "name": "02_article_with_meta",
+    "html_file": "fixtures/02_article_with_meta.html",
+    "expected_file": "expected/02_article_with_meta.txt",
+    "expected_with_meta": "expected/02_article_with_meta_meta.txt",
+    "expected_len": 134,
+    "expected_meta_len": 203
+  },
+  {
+    "name": "03_multiple_sections",
+    "html_file": "fixtures/03_multiple_sections.html",
+    "expected_file": "expected/03_multiple_sections.txt",
+    "expected_with_meta": "expected/03_multiple_sections_meta.txt",
+    "expected_len": 288,
+    "expected_meta_len": 339
+  },
+  {
+    "name": "04_with_lists",
+    "html_file": "fixtures/04_with_lists.html",
+    "expected_file": "expected/04_with_lists.txt",
+    "expected_with_meta": "expected/04_with_lists_meta.txt",
+    "expected_len": 284,
+    "expected_meta_len": 325
+  },
+  {
+    "name": "05_with_table",
+    "html_file": "fixtures/05_with_table.html",
+    "expected_file": "expected/05_with_table.txt",
+    "expected_with_meta": "expected/05_with_table_meta.txt",
+    "expected_len": 396,
+    "expected_meta_len": 434
+  },
+  {
+    "name": "06_with_quotes",
+    "html_file": "fixtures/06_with_quotes.html",
+    "expected_file": "expected/06_with_quotes.txt",
+    "expected_with_meta": "expected/06_with_quotes_meta.txt",
+    "expected_len": 355,
+    "expected_meta_len": 384
+  },
+  {
+    "name": "07_with_code",
+    "html_file": "fixtures/07_with_code.html",
+    "expected_file": "expected/07_with_code.txt",
+    "expected_with_meta": "expected/07_with_code_meta.txt",
+    "expected_len": 373,
+    "expected_meta_len": 400
+  },
+  {
+    "name": "08_nested_divs",
+    "html_file": "fixtures/08_nested_divs.html",
+    "expected_file": "expected/08_nested_divs.txt",
+    "expected_with_meta": "expected/08_nested_divs_meta.txt",
+    "expected_len": 102,
+    "expected_meta_len": 139
+  },
+  {
+    "name": "09_no_article_tag",
+    "html_file": "fixtures/09_no_article_tag.html",
+    "expected_file": "expected/09_no_article_tag.txt",
+    "expected_with_meta": "expected/09_no_article_tag_meta.txt",
+    "expected_len": 302,
+    "expected_meta_len": 336
+  },
+  {
+    "name": "10_with_sidebar",
+    "html_file": "fixtures/10_with_sidebar.html",
+    "expected_file": "expected/10_with_sidebar.txt",
+    "expected_with_meta": "expected/10_with_sidebar_meta.txt",
+    "expected_len": 89,
+    "expected_meta_len": 117
+  },
+  {
+    "name": "11_short_content",
+    "html_file": "fixtures/11_short_content.html",
+    "expected_file": "expected/11_short_content.txt",
+    "expected_with_meta": "expected/11_short_content_meta.txt",
+    "expected_len": 61,
+    "expected_meta_len": 87
+  },
+  {
+    "name": "12_long_article",
+    "html_file": "fixtures/12_long_article.html",
+    "expected_file": "expected/12_long_article.txt",
+    "expected_with_meta": "expected/12_long_article_meta.txt",
+    "expected_len": 393,
+    "expected_meta_len": 428
+  },
+  {
+    "name": "13_with_comments",
+    "html_file": "fixtures/13_with_comments.html",
+    "expected_file": "expected/13_with_comments.txt",
+    "expected_with_meta": "expected/13_with_comments_meta.txt",
+    "expected_len": 154,
+    "expected_meta_len": 193
+  },
+  {
+    "name": "14_boilerplate_heavy",
+    "html_file": "fixtures/14_boilerplate_heavy.html",
+    "expected_file": "expected/14_boilerplate_heavy.txt",
+    "expected_with_meta": "expected/14_boilerplate_heavy_meta.txt",
+    "expected_len": 115,
+    "expected_meta_len": 151
+  },
+  {
+    "name": "15_links_everywhere",
+    "html_file": "fixtures/15_links_everywhere.html",
+    "expected_file": "expected/15_links_everywhere.txt",
+    "expected_with_meta": "expected/15_links_everywhere_meta.txt",
+    "expected_len": 119,
+    "expected_meta_len": 149
+  },
+  {
+    "name": "16_mixed_formatting",
+    "html_file": "fixtures/16_mixed_formatting.html",
+    "expected_file": "expected/16_mixed_formatting.txt",
+    "expected_with_meta": "expected/16_mixed_formatting_meta.txt",
+    "expected_len": 343,
+    "expected_meta_len": 374
+  },
+  {
+    "name": "17_image_heavy",
+    "html_file": "fixtures/17_image_heavy.html",
+    "expected_file": "expected/17_image_heavy.txt",
+    "expected_with_meta": "expected/17_image_heavy_meta.txt",
+    "expected_len": 299,
+    "expected_meta_len": 328
+  },
+  {
+    "name": "18_json_ld_article",
+    "html_file": "fixtures/18_json_ld_article.html",
+    "expected_file": "expected/18_json_ld_article.txt",
+    "expected_with_meta": "expected/18_json_ld_article_meta.txt",
+    "expected_len": 108,
+    "expected_meta_len": 176
+  },
+  {
+    "name": "19_minimal_html",
+    "html_file": "fixtures/19_minimal_html.html",
+    "expected_file": "expected/19_minimal_html.txt",
+    "expected_with_meta": "expected/19_minimal_html_meta.txt",
+    "expected_len": 76,
+    "expected_meta_len": 104
+  },
+  {
+    "name": "20_emptyish",
+    "html_file": "fixtures/20_emptyish.html",
+    "expected_file": "expected/20_emptyish.txt",
+    "expected_with_meta": "expected/20_emptyish_meta.txt",
+    "expected_len": 31,
+    "expected_meta_len": 59
+  }
+]

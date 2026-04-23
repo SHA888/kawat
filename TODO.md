@@ -191,9 +191,9 @@
 
 ### 0.1.5 kawat facade + basic test
 
-- [ ] `kawat::extract()` returns plain text
-- [ ] Golden test: 20 HTML files, compare TXT output with Python trafilatura
-  - [ ] Acceptance: ≥70% match
+- [x] `kawat::extract()` returns plain text
+- [x] Golden test: 20 HTML files, compare TXT output with Python trafilatura
+  - [x] Acceptance: ≥70% match (actual: 91.2%)
 
 ### 0.1.6 Phase 1 release checklist
 

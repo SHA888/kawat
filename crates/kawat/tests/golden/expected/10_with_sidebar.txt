@@ -1,0 +1,3 @@
+Main Content
+This is the primary article content.
+Sidebar content should be filtered out.

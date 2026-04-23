@@ -1,0 +1,1 @@
+Structured Data Article This page includes JSON-LD structured data. The extractor may use this for metadata.

@@ -1,0 +1,14 @@
+---
+title: Top Programming Languages
+---
+Top Programming Languages
+Here are some popular languages:
+- Rust - systems programming
+- Python - data science
+- TypeScript - web development
+Each has its own strengths.
+- Learn the basics
+- Practice daily
+- Build projects
+Here are some popular languages:
+Each has its own strengths.

@@ -1,0 +1,15 @@
+Performance Comparison
+Results from benchmark tests:
+| Language | Speed | Memory |
+|---|---|---|
+| Rust | Fast | Low |
+| Python | Slow | High |
+| Go | Medium | Medium |
+The tests were run on standard hardware.
+Results from benchmark tests:
+| Language | Speed | Memory |
+|---|---|---|
+| Rust | Fast | Low |
+| Python | Slow | High |
+| Go | Medium | Medium |
+The tests were run on standard hardware.

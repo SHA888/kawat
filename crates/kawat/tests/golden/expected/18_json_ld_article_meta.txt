@@ -1,0 +1,6 @@
+---
+title: JSON-LD Headline
+author: John Smith
+date: 2024-06-01
+---
+Structured Data Article This page includes JSON-LD structured data. The extractor may use this for metadata.

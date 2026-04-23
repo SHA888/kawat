@@ -1,0 +1,6 @@
+---
+title: Deep Dive into Rust
+author: Jane Doe
+date: 2024-01-15
+---
+Deep Dive into Rust Rust is a systems programming language focused on safety and performance. Ownership is Rust's most unique feature.

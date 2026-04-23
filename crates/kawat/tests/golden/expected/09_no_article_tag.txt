@@ -1,0 +1,7 @@
+Main Content Title
+This page does not use article tags.
+The content is just in regular divs and paragraphs.
+Extraction should still work using other heuristics.
+This page does not use article tags.
+The content is just in regular divs and paragraphs.
+Extraction should still work using other heuristics.

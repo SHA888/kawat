@@ -1,0 +1,4 @@
+---
+title: Resource Guide
+---
+Resource Guide This article contains many useful links. Here is Rust and Python. Links should be handled appropriately.

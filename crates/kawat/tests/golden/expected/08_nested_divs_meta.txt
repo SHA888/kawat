@@ -1,0 +1,4 @@
+---
+title: Deeply Nested Content
+---
+Deeply Nested Content This content is wrapped in many divs. But the article tag should still be found.

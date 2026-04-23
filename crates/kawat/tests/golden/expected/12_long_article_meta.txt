@@ -1,0 +1,14 @@
+---
+title: Comprehensive Guide
+---
+Comprehensive Guide
+This is the introduction to a very long article.
+First Chapter
+Chapter one covers the fundamentals of the topic in detail.
+It continues with examples and explanations.
+Second Chapter
+Chapter two dives deeper into advanced concepts.
+More content here to make the article substantial.
+Third Chapter
+Chapter three wraps up with conclusions.
+Final thoughts and recommendations.

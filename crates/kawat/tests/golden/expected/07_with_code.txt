@@ -1,0 +1,19 @@
+Rust Basics
+Here is a simple function:
+fn hello() {
+println!("Hello, world!");
+}
+And another example with variables:
+let x = 5;
+let y = 10;
+let sum = x + y;
+Variables are immutable by default.
+Here is a simple function:
+fn hello() {
+println!("Hello, world!");
+}
+And another example with variables:
+let x = 5;
+let y = 10;
+let sum = x + y;
+Variables are immutable by default.

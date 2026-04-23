@@ -1,0 +1,3 @@
+Minimal Page
+No doctype, no head tags, just raw HTML.
+Very simple structure.

@@ -1,0 +1,5 @@
+---
+title: Mostly Empty
+---
+Navigation only
+Sidebar content

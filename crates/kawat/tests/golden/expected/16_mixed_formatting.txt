@@ -1,0 +1,9 @@
+Text Formatting
+This paragraph has bold and italic text.
+Also more bold and more italic text here.
+And underlined text as well.
+Formatting should be preserved or stripped cleanly.
+This paragraph has bold and italic text.
+Also more bold and more italic text here.
+And underlined text as well.
+Formatting should be preserved or stripped cleanly.

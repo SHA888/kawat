@@ -1,0 +1,5 @@
+---
+title: Brief Note
+---
+Brief Note
+This is a very short article with minimal content.
