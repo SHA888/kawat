@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Generate golden test fixtures: HTML files and expected trafilatura TXT outputs."""
+"""Generate golden test fixtures: HTML files and expected trafilatura TXT outputs.
+
+NOTE: This script generates the following artifacts which are committed to git:
+- fixtures/*.html — synthetic HTML test inputs
+- expected/*.txt — expected TXT output from Python trafilatura
+- metadata.json — test manifest mapping inputs to expected outputs
+
+If trafilatura version changes, re-run this script and commit updated expecteds.
+"""
 
 import json
 import os

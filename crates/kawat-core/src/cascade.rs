@@ -13,13 +13,8 @@ pub fn run(html: &str, options: &ExtractorOptions) -> Result<Document, Extractio
     // Step 2: Quick language check (fast mode only)
     // TODO: check_html_lang()
 
-    // Step 3: Extract metadata (if with_metadata)
-    let metadata = if options.with_metadata {
-        // TODO: kawat_metadata::extract_metadata(&document, ...)
-        kawat_metadata::DocumentMetadata::default()
-    } else {
-        kawat_metadata::DocumentMetadata::default()
-    };
+    // Step 3: Extract metadata (TODO: wired in when metadata extraction lands)
+    let metadata = kawat_metadata::DocumentMetadata::default();
 
     // Step 4: User-specified selector pruning
     // TODO: prune by options.prune_selectors

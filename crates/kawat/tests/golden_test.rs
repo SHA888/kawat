@@ -27,7 +27,9 @@ fn jaccard_similarity(a: &str, b: &str) -> f64 {
     intersection.len() as f64 / union.len() as f64
 }
 
-/// Compute character-level containment: how much of expected is in actual.
+/// Compute word-level containment: how many expected words appear in actual.
+/// Uses whole-word matching (HashSet) instead of substring search to avoid
+/// false positives (e.g. "a" matching inside "article").
 fn containment(actual: &str, expected: &str) -> f64 {
     let actual_lower = actual.to_lowercase();
     let expected_lower = expected.to_lowercase();
@@ -41,9 +43,10 @@ fn containment(actual: &str, expected: &str) -> f64 {
         return 1.0;
     }
 
+    let actual_words: HashSet<&str> = actual_lower.split_whitespace().collect();
     let matched = expected_words
         .iter()
-        .filter(|w| actual_lower.contains(**w))
+        .filter(|w| actual_words.contains(**w))
         .count();
 
     matched as f64 / expected_words.len() as f64
@@ -70,9 +73,15 @@ fn golden_test_suite() {
     let mut failures = Vec::new();
 
     for entry in metadata {
-        let name = entry["name"].as_str().unwrap();
-        let html_file = entry["html_file"].as_str().unwrap();
-        let expected_file = entry["expected_file"].as_str().unwrap();
+        let name = entry["name"]
+            .as_str()
+            .expect("field 'name' missing in metadata entry");
+        let html_file = entry["html_file"]
+            .as_str()
+            .expect("field 'html_file' missing in metadata entry");
+        let expected_file = entry["expected_file"]
+            .as_str()
+            .expect("field 'expected_file' missing in metadata entry");
 
         let html_path = fixtures_dir.join(html_file);
         let expected_path = fixtures_dir.join(expected_file);
@@ -146,7 +155,17 @@ fn golden_test_suite() {
         avg_score * 100.0
     );
 
-    // Assertion: average must meet threshold
+    // Assertion 1: at least ACCEPTANCE_THRESHOLD fraction of fixtures must pass
+    let passing_rate = passing as f64 / total as f64;
+    assert!(
+        passing_rate >= ACCEPTANCE_THRESHOLD,
+        "Only {passing}/{total} fixtures pass ({}.{:0>2}%), need >= {:.0}%",
+        (passing_rate * 100.0) as usize,
+        ((passing_rate * 100.0).fract() * 100.0) as usize,
+        ACCEPTANCE_THRESHOLD * 100.0
+    );
+
+    // Assertion 2: average score must also meet threshold
     assert!(
         avg_score >= ACCEPTANCE_THRESHOLD,
         "Average golden test score {:.1}% below threshold {:.1}%",
