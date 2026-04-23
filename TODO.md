@@ -204,9 +204,9 @@
 - [x] README with basic usage example
 - [x] Tag `v0.1.0`
 - [x] Publish to crates.io
-- [ ] Set up basic CI workflow (format, clippy, test)
-- [ ] Configure pre-commit hooks
-- [ ] Code coverage integration (70% target) with codecov
+- [x] Set up basic CI workflow (format, clippy, test)
+- [x] Configure pre-commit hooks
+- [x] Code coverage integration (70% target) with codecov
 
 ---
 
