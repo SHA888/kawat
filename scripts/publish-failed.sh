@@ -77,8 +77,10 @@ main() {
         "kawat-dedup"
         "kawat-output"
         "kawat-readability"
+        "kawat-justext"
         "kawat-core"
         "kawat"
+        "kawat-cli"
     )
     
     local failed_crates=()
