@@ -11,7 +11,7 @@ name = "kawat"
 path = "src/main.rs"
 
 [dependencies]
-kawat = { path = "../kawat" }
+kawat = { version = "0.1.5", path = "../kawat" }
 kawat-core = { workspace = true }
 kawat-output = { workspace = true }
 clap = { workspace = true }
