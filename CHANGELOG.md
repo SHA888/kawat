@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## v0.1.5 - 2026-04-23
+
+### Added
+- **kawat**: Public facade crate
+  - `kawat::extract()`: Single-call HTML → plain text extraction
+  - `fetch_url()` / `fetch_url_async()`: URL fetching helpers
+- **Golden test suite**: 20 HTML fixtures compared against Python trafilatura 2.0
+  - Similarity scoring via Jaccard + word-level containment
+  - Average match: 91.2% (threshold: 70%)
+- **CI/CD enhancements**
+  - `cargo-about` license certification (`about.toml`)
+  - Security audit workflow with `cargo-audit` + RUSTSEC advisory tracking
+
+### Changed
+- `cascade.rs`: Removed dead `with_metadata` branch (single default path)
+- `containment()`: Switched from substring to HashSet word-level matching
+
+### Fixed
+- Word-level containment false positives ("a" matching inside "article")
+- `rustls-webpki` vulnerability (RUSTSEC-2026-0104) via `cargo update`
+
 ## v0.1.4 - 2026-04-18
 
 ### Added

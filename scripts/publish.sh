@@ -79,6 +79,7 @@ main() {
         "kawat-justext"
         "kawat-core"
         "kawat"
+        "kawat-cli"
     )
     
     local failed_crates=()
