@@ -56,7 +56,7 @@ regex = "1"
 once_cell = "1"
 
 # Hashing / dedup
-lru = "0.16"
+lru = "0.18"
 xxhash-rust = { version = "0.8", features = ["xxh3"] }
 sha1_smol = "1"
 
