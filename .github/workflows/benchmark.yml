@@ -96,7 +96,7 @@ jobs:
           
       - name: Download previous benchmark data
         if: github.event_name == 'pull_request'
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v21
         with:
           workflow: benchmark.yml
           branch: main
