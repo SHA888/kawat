@@ -29,7 +29,7 @@ categories = ["web-programming", "text-processing", "parser-implementations"]
 sxd_html = "0.1"
 sxd-document = "0.3"
 sxd-xpath = "0.4"
-scraper = "0.26"
+scraper = "0.27"
 lol_html = "2"
 
 # Readability fallback
