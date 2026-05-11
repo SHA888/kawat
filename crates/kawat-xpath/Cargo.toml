@@ -10,7 +10,7 @@ rust-version.workspace = true
 sxd_html = "0.1"
 sxd-document = { workspace = true }
 sxd-xpath = "0.4"
-scraper = "0.26"
+scraper = "0.27"
 thiserror = "2"
 once_cell = { workspace = true }
 tracing = { workspace = true }
